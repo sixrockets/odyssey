@@ -8,8 +8,7 @@ module.exports = function(app){
 
   SlackClient.prototype.getAccessToken = function(cb){
     console.log('getting access token');
-    app.redisClient.get('session-accessToken', function(err, body){
-      console.log('the access token is ' + body);
+    app.redisClient.get('session-accessToken', function(err, body){      
       if (body !== null){
         cb(body);
       }
