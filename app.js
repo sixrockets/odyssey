@@ -1,4 +1,5 @@
 var express = require('express'),
+    express_session = require('express-session'),
     path = require('path'),
     logger = require('morgan'),
     request = require('request'),
@@ -16,7 +17,6 @@ var serverPath = function(route){
 var app = express();
 
 app.serverPath = serverPath;
-
 
 app.config = config();
 
@@ -40,12 +40,12 @@ passport.use(new SlackStrategy({
   }
 ));
 
-app.configure( function(){
-  app.use(express.session({ secret: app.config.secret }));
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.use(app.router);
-});
+
+app.use(express_session({ secret: app.config.secret }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 
 app.redisClient = require( serverPath( 'redisClient' ))(app);
 
