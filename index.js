@@ -3,6 +3,8 @@ var app = require('./app');
 // Only API endpoint for now
 app.get('/', function(req, res){
   app.slackClient.test(function(response, body){
+    console.log(response);
+    console.log(body);
     res.send(response);
   })
 });
