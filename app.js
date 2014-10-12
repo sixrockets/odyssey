@@ -47,7 +47,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-
 app.redisClient = require( serverPath( 'redisClient' ))(app);
+app.slackClient = require(serverPath('slackClient'))(app);
 
 module.exports = app;

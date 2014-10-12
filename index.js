@@ -2,9 +2,9 @@ var app = require('./app');
 
 // Only API endpoint for now
 app.get('/', function(req, res){
-
-  res.send('this is the ruby room slackbot');
-
+  app.slackClient.test(function(body){
+    res.send(body);
+  })  
 });
 
 
