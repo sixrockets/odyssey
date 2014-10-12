@@ -6,7 +6,7 @@ module.exports = function(app){
     this.baseUrl = 'https://slack.com/api/';
   };
 
-  SlackClient.getAccessToken = function(cb){
+  SlackClient.prototype.getAccessToken = function(cb){
     app.redisClient.get('session-accessToken', function(err, body){
       if (body === null){
         cb(body);
