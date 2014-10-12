@@ -22,7 +22,8 @@ module.exports = function(app){
       var apiCallUri = this.baseUrl + apiCall;
 
       request( {
-        uri: apiCallUri,
+        url:  url.parse(apiCallUri),
+        protocol: 'https',
         qs: { "access_token": accessToken } },
         function(error, response, body){
           console.log(error);
