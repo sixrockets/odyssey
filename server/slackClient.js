@@ -31,11 +31,12 @@ module.exports = function(app){
   SlackClient.prototype.performRequest = function(apiCall, method, params, cb){
 
     this.getAccessToken( function(err, accessToken){
-      if( err !== null ) { cb(er, {}) }
+      if( err !== null ) { cb(err, {}) }
       else {
         var apiCallUrl = url.parse(this.baseUrl + apiCall);        
         request( {
-          url:  apiCallUrl, qs: { "token": accessToken } },
+          json:true,
+          url:  apiCallUrl, qs: _.extend({ "token": accessToken }, params)},
           function(error, response, body){
             var err = null;
             if(error){ err = {error: 'There was an error performing the request'}; }
@@ -57,6 +58,41 @@ module.exports = function(app){
     this.performRequest('groups.list', 'get', {}, cb);
   }
 
+  SlackClient.prototype.channelsHistory = function(params, cb){
+    var default_params = {
+    }
+    _.extend(default_params, params)
+    this.performRequest('channels.history', 'get', default_params, cb);
+  }
+
+  var groupsHistory = SlackClient.prototype.groupsHistory = function(params, cb){
+    var default_params = {
+    }
+    _.extend(default_params, params)
+    this.performRequest('groups.history', 'get', default_params, cb);
+  }
+
+  SlackClient.prototype.groupsMessages = function(params, cb){
+    this.groupsHistory(params, function(err, response, body){
+      if(err){
+        cb(err)
+      }else{
+        _.each(body['messages'], function(element, _index, _list){
+          cb(null, element)
+        })
+      }
+    })
+
+  }
+
+  SlackClient.prototype.chatPostMessage = function(params, cb){
+    var default_params = {
+      username: "My Bot",
+      icon_emoji: ":ghost:"
+    }
+    _.extend(default_params, params)
+    this.performRequest('chat.postMessage', 'post', default_params, cb);
+  }
 
   return new SlackClient(app);
 
