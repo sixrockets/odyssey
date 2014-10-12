@@ -34,8 +34,8 @@ passport.use(new SlackStrategy({
   function(accessToken, refreshToken, profile, done) {
     console.log( "Received " + accessToken + " " + refreshToken + " " + profile);
     app.redisClient.set('session-accessToken', accessToken);
-    app.redisClient.set('session-refreshToken', refreshToken);
-    app.redisClient.set('session-profile', profile);
+    // app.redisClient.set('session-refreshToken', refreshToken);
+    // app.redisClient.set('session-profile', profile);
     var userSession = { accessToken: accessToken, refreshToken: refreshToken, profile: profile  };
     return done(null, userSession);
   }
