@@ -3,6 +3,7 @@ var app = require('./app');
 // Only API endpoint for now
 app.get('/', function(req, res){
   console.log('sucessfully logged into slack');
+  res.send
 
 });
 

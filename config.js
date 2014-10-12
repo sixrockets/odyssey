@@ -10,8 +10,10 @@ module.exports = function(){
         case 'production':
             console.log("production environment set");
             return {
+              secret: process.env.SECRET,
               port  : process.env.PORT,
               redis : {
+                url: process.env.REDISCLOUD_URL
                 port: process.env.REDIS_PORT,
                 host: process.env.REDIS_HOST,
                 user: process.env.REDIS_USER,
@@ -28,6 +30,7 @@ module.exports = function(){
         default:
             console.log("default environment set");
             return {
+              secret: 'hack hack hack',
               port  : 3000,
               redis : {port: 6379, host: "127.0.0.1", options: {}},
               mongodb: {url: 'mongodb://localhost/rr_bot'},

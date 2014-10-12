@@ -16,7 +16,7 @@ var serverPath = function(route){
 var app = express();
 
 app.serverPath = serverPath;
-app.use(logger());
+
 
 app.config = config();
 
@@ -32,9 +32,21 @@ passport.use(new SlackStrategy({
     clientSecret: app.config.slack_api.secret
   },
   function(accessToken, refreshToken, profile, done) {
-    return done(null, {});
+    app.redisClient.set('session-accessToken', accessToken);
+    app.redisClient.set('session-refreshToken', refreshToken);
+    app.redisClient.set('session-profile', profile);
+    var userSession = { accessToken: accessToken, refreshToken: refreshToken, profile: profile  };
+    return done(null, userSession);
   }
 ));
 
+app.configure( function(){
+  app.use(express.session({ secret: app.config.secret }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(app.router);
+});
+
+app.redisClient = require( serverPath( 'redisClient' ))(app);
 
 module.exports = app;
