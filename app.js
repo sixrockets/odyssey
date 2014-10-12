@@ -32,6 +32,7 @@ passport.use(new SlackStrategy({
     clientSecret: app.config.slack_api.secret
   },
   function(accessToken, refreshToken, profile, done) {
+    console.log( "Received " + accessToken + " " + refreshToken + " " + profile);
     app.redisClient.set('session-accessToken', accessToken);
     app.redisClient.set('session-refreshToken', refreshToken);
     app.redisClient.set('session-profile', profile);
