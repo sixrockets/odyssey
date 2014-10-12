@@ -29,7 +29,8 @@ app.modules.passport = passport;
 
 passport.use(new SlackStrategy({
     clientID: app.config.slack_api.client_id,
-    clientSecret: app.config.slack_api.secret
+    clientSecret: app.config.slack_api.secret,
+    scope: 'identify,read,post'
   },
   function(accessToken, refreshToken, profile, done) {
     console.log( "Received " + accessToken + " " + refreshToken + " " + profile);
