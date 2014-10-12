@@ -34,4 +34,6 @@ module.exports = function(app){
     this.performRequest('test', 'get', cb);
   };
 
+  return new SlackClient(app);
+
 }
