@@ -8,10 +8,11 @@ app.get('/', function(req, res){
 
 
 app.get('/auth/slack',
-  passport.authorize('slack'));
+  app.modules.passport.authorize('slack')
+);
 
 app.get('/auth/slack/callback',
-  passport.authorize('slack', { failureRedirect: '/login' }),
+  app.modules.passport.authorize('slack', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
     res.redirect('/');
