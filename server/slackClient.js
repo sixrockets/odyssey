@@ -1,5 +1,6 @@
 var request = require('request'),
-    url     = require('url');
+    url     = require('url'),
+    _       = require('underscore');
 
 module.exports = function(app){
 
@@ -9,39 +10,53 @@ module.exports = function(app){
 
   SlackClient.prototype.getAccessToken = function(cb){
     console.log('getting access token');
-    app.redisClient.get('session-accessToken', function(err, body){
-      if (body !== null){
-        cb(body);
-      }
-    });
+
+    if (this.accessToken !== null && this.accessToken !== undefined){
+      cb(null, this.accessToken);
+    } else {
+
+      app.redisClient.get('session-accessToken', function(err, accessToken){
+        if (accessToken !== null){
+          this.accessToken = accessToken;
+          cb(null, this.accessToken);
+        } else {
+          cb({error: 'No accessToken found'}, {});
+        }
+      }.bind(this));
+    }
+
   };
 
-  SlackClient.prototype.performRequest = function(apiCall, method, cb){
 
-    this.getAccessToken( function(accessToken){
-      console.log('sucessfully got the access token');
-      var apiCallUri = this.baseUrl + apiCall;
+  SlackClient.prototype.performRequest = function(apiCall, method, params, cb){
 
-      request( {
-        url:  url.parse(apiCallUri),
-        protocol: 'https',
-        qs: { "access_token": accessToken } },
-        function(error, response, body){
-          console.log(error);
-          console.log(response);
-          console.log(body);
-
-          cb(response, body);
-        }
-      )
-    })
+    this.getAccessToken( function(err, accessToken){
+      if( err !== null ) { cb(er, {}) }
+      else {
+        var apiCallUrl = url.parse(this.baseUrl + apiCall);        
+        request( {
+          url:  apiCallUrl, qs: { "token": accessToken } },
+          function(error, response, body){
+            var err = null;
+            if(error){ err = {error: 'There was an error performing the request'}; }
+            if (body['ok'] == false){ err = {error: body['error']}  };
+            cb(err, response, body);
+          }
+        )
+      }
+    }.bind(this))
 
   };
 
   SlackClient.prototype.test = function(cb){
     console.log('slack client test called');
-    this.performRequest('test', 'get', cb);
+    this.performRequest('api.test', 'get', {}, cb);
   };
+
+  SlackClient.prototype.groupList = function(cb){
+    this.performRequest('groups.list', 'get', {}, cb);
+  }
+
 
   return new SlackClient(app);
 
