@@ -10,7 +10,7 @@ module.exports = function(app){
     console.log('getting access token');
     app.redisClient.get('session-accessToken', function(err, body){
       console.log('the access token is ' + body);
-      if (body === null){
+      if (body !== null){
         cb(body);
       }
     });
