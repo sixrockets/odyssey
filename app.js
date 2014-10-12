@@ -36,8 +36,5 @@ passport.use(new SlackStrategy({
   }
 ));
 
-app.redisClient = require( serverPath( 'redisClient' ))(app);
-app.bicimadFetcher = require( serverPath( 'bicimadFetcher' ))(app);
-app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
 module.exports = app;
