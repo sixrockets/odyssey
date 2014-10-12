@@ -13,7 +13,7 @@ module.exports = function(){
               secret: process.env.SECRET,
               port  : process.env.PORT,
               redis : {
-                url: process.env.REDISCLOUD_URL
+                url: process.env.REDISCLOUD_URL,
                 port: process.env.REDIS_PORT,
                 host: process.env.REDIS_HOST,
                 user: process.env.REDIS_USER,
