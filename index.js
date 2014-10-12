@@ -22,6 +22,6 @@ app.get('/auth/slack/callback',
 
 
 var server = app.listen(app.config.port, function() {
-  // app.modules.mongoose.connect(app.config.mongodb.url);
+  app.modules.mongoose.connect(app.config.mongodb.url);
   console.log('Listening on port %d', server.address().port);
 });

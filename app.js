@@ -42,13 +42,12 @@ passport.use(new SlackStrategy({
   }
 ));
 
-
 app.use(express_session({ secret: app.config.secret }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.redisClient = require( serverPath( 'redisClient' ))(app);
 app.slackClient = require(serverPath('slackClient'))(app);
+app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
 module.exports = app;

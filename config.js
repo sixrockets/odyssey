@@ -38,6 +38,7 @@ module.exports = function(){
                 client_id: process.env.SLACK_CLIENT_ID,
                 secret: process.env.SLACK_SECRET
               }
+              
             };
     }
 };
