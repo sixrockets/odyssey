@@ -7,7 +7,9 @@ module.exports = function(app){
   };
 
   SlackClient.prototype.getAccessToken = function(cb){
+    console.log('getting access token');
     app.redisClient.get('session-accessToken', function(err, body){
+      console.log('the access token is ' + body);
       if (body === null){
         cb(body);
       }
@@ -17,6 +19,7 @@ module.exports = function(app){
   SlackClient.prototype.performRequest = function(apiCall, method, cb){
 
     this.getAccessToken( function(accessToken){
+      console.log('sucessfully got the access token');
       var apiCallUri = this.baseUrl + apiCall;
 
       request( {
@@ -31,6 +34,7 @@ module.exports = function(app){
   };
 
   SlackClient.prototype.test = function(cb){
+    console.log('slack client test called');
     this.performRequest('test', 'get', cb);
   };
 
