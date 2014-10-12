@@ -5,9 +5,14 @@ var app     = require('./app'),
 app.channel_name = /_bot_/;
 
 app.bot = function(message, post){
-  text = message["user"] + " says " + message["text"];
+  // text = "<@"+ message.user +">" + " says " + message.text;
+  text = "*" + message.username + "* _says_: \n>" + message.text;
   console.log(text + "\n")
-  post({text: text});
+  post({
+    text: text,
+    username: "Echo Bot",
+    icon_emoji: ":speaker:"
+  });
 }
 
 app.channels = function(cb){
@@ -44,8 +49,19 @@ app.get('/', function(req, res){
 
       app.slackClient.groupsHistory(params, function(err, response, body){
         _.each(body['messages'], function(message, _index, _list){
+
           if (!_.has(message, 'subtype')){
-            app.bot(message, post)
+
+              app.SlackUsers.userInfo(message.user, function(err, userInfo){
+              message.username = userInfo.real_name || username.name
+              _.extend(message, userInfo)
+
+              console.log(message)
+
+              app.bot(message, post)
+
+            });
+
           }
         })
       })
@@ -55,7 +71,18 @@ app.get('/', function(req, res){
   });
 
   res.send("...");
+});
 
+app.get('/users', function(req, res){
+  app.slackUsers.saveUsers(function(err, body){
+    res.send(body);
+  })
+});
+
+app.get('/user', function(req, res){
+  app.slackUsers.userInfo(req.query.id, function(err, body){
+    res.send(body);
+  })
 });
 
 app.get('/auth/slack',
