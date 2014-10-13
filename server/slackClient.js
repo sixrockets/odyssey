@@ -9,7 +9,6 @@ module.exports = function(app){
   };
 
   SlackClient.prototype.getAccessToken = function(cb){
-    console.log('getting access token');
 
     if (this.accessToken !== null && this.accessToken !== undefined){
       cb(null, this.accessToken);

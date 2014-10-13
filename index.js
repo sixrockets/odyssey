@@ -29,8 +29,9 @@ app.channels = function(cb){
 
 }
 
-app.get('/', function(req, res){
+app.checkMessages = function(){
   var now = Date.now() / 1000;
+  console.log("now: " + now)
 
   app.channels(function(channel){
 
@@ -69,7 +70,12 @@ app.get('/', function(req, res){
     });
 
   });
+}
 
+app.timer = null;
+
+app.get('/', function(req, res){
+  app.timer = app.timer || setInterval( app.checkMessages, 1000 );
   res.send("...");
 });
 
