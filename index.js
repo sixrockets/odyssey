@@ -52,7 +52,7 @@ app.get('/', function(req, res){
 
           if (!_.has(message, 'subtype')){
 
-              app.SlackUsers.userInfo(message.user, function(err, userInfo){
+              app.slackUsers.userInfo(message.user, function(err, userInfo){
               message.username = userInfo.real_name || username.name
               _.extend(message, userInfo)
 
