@@ -48,7 +48,11 @@ app.use(passport.session());
 
 app.redisClient = require( serverPath( 'redisClient' ))(app);
 app.slackClient = require(serverPath('slackClient'))(app);
+app.slackStreamer = require(serverPath('slackStreamer'))(app);
 app.slackUsers = require(serverPath('slackUsers'))(app);
+app.karmaBot = require(serverPath('karmaBot'))(app);
+
+
 app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
 module.exports = app;
