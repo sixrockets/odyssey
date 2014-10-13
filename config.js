@@ -1,3 +1,6 @@
+dotenv = require('dotenv');
+dotenv.load();
+
 module.exports = function(){
     switch(process.env.NODE_ENV){
         case 'development':
