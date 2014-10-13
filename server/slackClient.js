@@ -59,17 +59,15 @@ module.exports = function(app){
   }
 
   SlackClient.prototype.channelsHistory = function(params, cb){
-    var default_params = {
-    }
-    _.extend(default_params, params)
-    this.performRequest('channels.history', 'get', default_params, cb);
+    this.performRequest('channels.history', 'get', params, cb);
+  }
+
+  SlackClient.prototype.usersList = function(cb){
+    this.performRequest('users.list', 'get', {}, cb);
   }
 
   var groupsHistory = SlackClient.prototype.groupsHistory = function(params, cb){
-    var default_params = {
-    }
-    _.extend(default_params, params)
-    this.performRequest('groups.history', 'get', default_params, cb);
+    this.performRequest('groups.history', 'get', params, cb);
   }
 
   SlackClient.prototype.groupsMessages = function(params, cb){
