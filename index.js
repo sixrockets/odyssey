@@ -15,68 +15,15 @@ app.bot = function(message, post){
   });
 }
 
-app.channels = function(cb){
-
-  app.slackClient.groupList(function(err, response, body){
-    groups = _.filter(body["groups"], function(group){ return app.channel_name.test(group["name"]) })
-    app.channels_ids = _.map(groups, function(group){return group["id"]})
-
-    _.each(app.channels_ids, function(channel){
-      cb(channel)
-    });
-
-  });
-
-}
-
-app.checkMessages = function(){
-  var now = Date.now() / 1000;
-  console.log("now: " + now)
-
-  app.channels(function(channel){
-
-    function post(params){
-      app.slackClient.chatPostMessage(_.extend({channel:channel}, params), function(){})
-    }
-
-    app.redisClient.get('oldest', function(err, oldest){
-      app.redisClient.set('oldest', now)
-
-      var params = {
-        channel: channel,
-        oldest: (oldest || now - 60),
-        latest: now
-      };
-
-      app.slackClient.groupsHistory(params, function(err, response, body){
-        _.each(body['messages'], function(message, _index, _list){
-
-          if (!_.has(message, 'subtype')){
-
-              app.SlackUsers.userInfo(message.user, function(err, userInfo){
-              message.username = userInfo.real_name || username.name
-              _.extend(message, userInfo)
-
-              console.log(message)
-
-              app.bot(message, post)
-
-            });
-
-          }
-        })
-      })
-
-    });
-
-  });
-}
 
 app.timer = null;
 
 app.get('/', function(req, res){
-  app.timer = app.timer || setInterval( app.checkMessages, 1000 );
-  res.send("...");
+  app.slackStreamer.getLastMessages( /underground-ruby-room|other-channel/, function(err, messageInfo){
+    console.log(messageInfo);
+  });
+  // app.timer = app.timer || setInterval( app.checkMessages, 1000 );
+  // res.send("...");
 });
 
 app.get('/users', function(req, res){

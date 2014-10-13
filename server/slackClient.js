@@ -32,7 +32,7 @@ module.exports = function(app){
     this.getAccessToken( function(err, accessToken){
       if( err !== null ) { cb(err, {}) }
       else {
-        var apiCallUrl = url.parse(this.baseUrl + apiCall);        
+        var apiCallUrl = url.parse(this.baseUrl + apiCall);
         request( {
           json:true,
           url:  apiCallUrl, qs: _.extend({ "token": accessToken }, params)},
@@ -74,9 +74,7 @@ module.exports = function(app){
       if(err){
         cb(err)
       }else{
-        _.each(body['messages'], function(element, _index, _list){
-          cb(null, element)
-        })
+        cb(null, body['messages']);
       }
     })
 

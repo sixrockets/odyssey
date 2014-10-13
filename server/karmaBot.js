@@ -1,13 +1,16 @@
-var async = app.modules.async,
-    MessageParser = require('karmaBot/parser');
+
+var MessageParser = require('karmaBot/parser');
 
 module.exports = function(app){
+
+  var async = app.modules.async;
 
   var KarmaBot = function(app){
     this.tickThreshold = app.config.karmaBot.tickThreshold;
     this.messageParser = MessageParser.new();
     // Hardcoded right now, refactor later.
-    this.monitoringChannels = [{"id":"G02L09CRW","name":"underground-ruby-room"}];
+    this.monitoringChannelNames = /underground-ruby-room|other-channel/
+    // this.monitoringChannels = [{"id":"G02L09CRW","name":"underground-ruby-room"}];
   };
 
   KarmaBot.prototype.start = function(){
@@ -56,5 +59,20 @@ module.exports = function(app){
 
     });
   };
+
+  KarmaBot.prototype._monitoringChannels = function(cb){
+    app.slackClient.groupList(function(err, response, body){
+      groups = _.filter(body["groups"], function(group){
+        return this.monitoringChannelNames.test(group["name"])
+      }.bind(this));
+
+      var channels_ids = _.map(groups, function(group){return group["id"]})
+
+      cb( channels_ids )
+
+    }.bind(this) );
+  };
+
+  return newKarmaBot(app);
 
 }
