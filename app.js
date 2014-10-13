@@ -50,8 +50,12 @@ app.redisClient = require( serverPath( 'redisClient' ))(app);
 app.slackClient = require(serverPath('slackClient'))(app);
 app.slackStreamer = require(serverPath('slackStreamer'))(app);
 app.slackUsers = require(serverPath('slackUsers'))(app);
-app.karmaBot = require(serverPath('karmaBot'))(app);
 
+app.echoBot = require(serverPath('echoBot'))(app);
+app.karmaBot = require(serverPath('karmaBot'))(app);
+app.flickrBot = require(serverPath('flickrBot'))(app);
+
+app.bots = [app.karmaBot, app.flickrBot]
 
 app.models = require( serverPath( path.join('models', 'index') ) )(app);
 

@@ -1,20 +1,7 @@
 var app     = require('./app'),
     _       = require('underscore');
 
-
 app.channel_name = /_bot_/;
-
-app.bot = function(message, post){
-  // text = "<@"+ message.user +">" + " says " + message.text;
-  text = "*" + message.username + "* _says_: \n>" + message.text;
-  console.log(text + "\n")
-  post({
-    text: text,
-    username: "Echo Bot",
-    icon_emoji: ":speaker:"
-  });
-}
-
 
 app.timer = null;
 
@@ -23,8 +10,8 @@ app.get('/', function(req, res){
   if (app.timer !== null){ clearInterval(app.timer) };
 
   app.timer = setInterval( function(){
-    app.slackStreamer.getLastMessages( /underground-ruby-room|baruco-2014|test/, function(err, messageInfo){
-      app.karmaBot.tick(messageInfo);
+    app.slackStreamer.getLastMessages( app.channel_name, function(err, messageInfo){
+      _.each(app.bots, function(bot){bot.tick(messageInfo)})
     });
   }, 2500 );
   res.send("bots started");
