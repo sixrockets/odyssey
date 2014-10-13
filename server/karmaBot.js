@@ -15,6 +15,7 @@ module.exports = function(app){
   };
 
   KarmaBot.prototype.increaseKarma = function(userName, cb){
+    console.log('increasing karma for ' + userName);
     app.models.User.findOne( {name: userName}, function(err, user){
       if ( user !== null ){
         user.increaseKarma(cb);
@@ -53,18 +54,6 @@ module.exports = function(app){
     });
   };
 
-  KarmaBot.prototype._monitoringChannels = function(cb){
-    app.slackClient.groupList(function(err, response, body){
-      groups = _.filter(body["groups"], function(group){
-        return this.monitoringChannelNames.test(group["name"])
-      }.bind(this));
-
-      var channels_ids = _.map(groups, function(group){return group["id"]})
-
-      cb( channels_ids )
-
-    }.bind(this) );
-  };
 
   return new KarmaBot(app);
 
