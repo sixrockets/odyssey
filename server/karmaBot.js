@@ -1,7 +1,9 @@
-var async = app.modules.async,
-    MessageParser = require('karmaBot/parser');
+
+var MessageParser = require('karmaBot/parser');
 
 module.exports = function(app){
+
+  var async = app.modules.async;
 
   var KarmaBot = function(app){
     this.tickThreshold = app.config.karmaBot.tickThreshold;
@@ -70,5 +72,7 @@ module.exports = function(app){
 
     }.bind(this) );
   };
+
+  return newKarmaBot(app);
 
 }
