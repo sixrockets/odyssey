@@ -19,11 +19,16 @@ app.bot = function(message, post){
 app.timer = null;
 
 app.get('/', function(req, res){
-  app.slackStreamer.getLastMessages( /underground-ruby-room|other-channel/, function(err, messageInfo){
-    console.log(messageInfo);
-  });
-  // app.timer = app.timer || setInterval( app.checkMessages, 1000 );
-  // res.send("...");
+
+  if (app.timer !== null){ clearInterval(app.timer) };
+
+  app.timer = setInterval( function(){
+    app.slackStreamer.getLastMessages( /underground-ruby-room|baruco-2014|test/, function(err, messageInfo){
+      app.karmaBot.tick(messageInfo);
+    });
+  }, 2500 );
+  res.send("bots started");
+
 });
 
 app.get('/users', function(req, res){

@@ -1,24 +1,17 @@
 
-var MessageParser = require('karmaBot/parser');
+var MessageParser = require('./karmaBot/parser')();
 
 module.exports = function(app){
 
   var async = app.modules.async;
 
   var KarmaBot = function(app){
-    this.tickThreshold = app.config.karmaBot.tickThreshold;
-    this.messageParser = MessageParser.new();
+
+    this.messageParser = new MessageParser();
+    console.log( this.messageParser );
     // Hardcoded right now, refactor later.
     this.monitoringChannelNames = /underground-ruby-room|other-channel/
     // this.monitoringChannels = [{"id":"G02L09CRW","name":"underground-ruby-room"}];
-  };
-
-  KarmaBot.prototype.start = function(){
-    this.timer = setInterval( this.tick, this.tickThreshold );
-  };
-
-  KarmaBot.prototype.stop = function(){
-    clearInterval(this.timer);
   };
 
   KarmaBot.prototype.increaseKarma = function(userName, cb){
@@ -37,8 +30,10 @@ module.exports = function(app){
     });
   };
 
-  KarmaBot.prototype._tryAction = function(message, cb){
-    parsedInfo = this.messageParser.parseMessage(message);
+  KarmaBot.prototype._tryAction = function(messageInfo, cb){
+    console.log('trying to parse');
+    console.log(messageInfo);
+    parsedInfo = this.messageParser.parseMessage(messageInfo.message.text);
     if (parsedInfo['action'] !== undefined ){
 
       switch(parsedInfo['action']){
@@ -52,11 +47,9 @@ module.exports = function(app){
     }
   };
 
-  KarmaBot.prototype.tick = function(){
-    app.slackClient.getLastStream( function(err, messages){
-
-      async.each(messages, this._tryAction );
-
+  KarmaBot.prototype.tick = function(message){
+    this._tryAction(message, function(){
+      console.log('karmabot ticked');
     });
   };
 
@@ -73,6 +66,6 @@ module.exports = function(app){
     }.bind(this) );
   };
 
-  return newKarmaBot(app);
+  return new KarmaBot(app);
 
 }

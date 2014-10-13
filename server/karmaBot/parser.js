@@ -1,14 +1,13 @@
 module.exports = function(){
 
   var Parser = function(){
-
   };
 
-  Parser.prototype.parseMessage(message){
+  Parser.prototype.parseMessage = function(message){
 
     var action = undefined;
-    var user = undefined;
-
+    var userName = undefined;
+    console.log('parsing ' + message);
     // Cutre parse v1
     if ( message.match(/^@\w+\+{2}$/) ){
       action = "karmaPlus";
@@ -22,5 +21,7 @@ module.exports = function(){
 
     return {action: action, userName: userName};
   };
+
+  return Parser;
 
 }
