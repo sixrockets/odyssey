@@ -18,15 +18,12 @@ module.exports = function(app){
   }
 
   GiphyBot.prototype.getImageName = function(message){
-    return message.substr(0, message.length-4).replace(/-/g,"+")
+    return message.substr(0, message.length-4).replace(/[-_+\s]+/g," ").trim()
   }
 
   GiphyBot.prototype.perfomRequest = function(query, cb){
     var qs = _.extend({q: query}, this.qs)
-    console.log( "qs:" + JSON.stringify(qs))
     request({json: true, url: this.apiCallUrl, qs: qs}, function(error, response, body){
-        console.log("" + query + ":")
-        console.log(body)
         if(body){
           cb(body)
         }
@@ -51,6 +48,7 @@ module.exports = function(app){
       this.perfomRequest(query, function(body){
         if(body.data[0]){
           var photo = _.sample(body.data)
+          console.log("" + query + ": ")
           console.log(photo)
           this.postPhoto(message.channel, "" + query + ": " + photo.url)
         };

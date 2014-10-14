@@ -25,14 +25,12 @@ module.exports = function(app){
   }
 
   FlickrBot.prototype.getImageName = function(message){
-    return message.substr(0, message.length-4).replace(/-/g," ")
+    return message.substr(0, message.length-4).replace(/[-_+\s]+/g," ").trim()
   }
 
   FlickrBot.prototype.perfomRequest = function(query, cb){
     var qs = _.extend({text: query}, this.qs)
     request({json: true, url: this.apiCallUrl, qs: qs}, function(error, response, body){
-        console.log("" + query + ":")
-        console.log(body)
         if(body){
           cb(body)
         }
@@ -57,6 +55,7 @@ module.exports = function(app){
       this.perfomRequest(query, function(body){
         if(body.photos.photo[0]){
           var photo = _.sample(body.photos.photo)
+          console.log("" + query + ": ")
           console.log(photo)
           this.postPhoto(message.channel, "" + query + ": " + photo.url_m)
         };

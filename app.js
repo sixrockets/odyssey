@@ -4,7 +4,7 @@ var express = require('express'),
     logger = require('morgan'),
     request = require('request'),
     mongoose = require('mongoose'),
-    underscore = require('underscore'),
+    _ = underscore = require('underscore'),
     async = require('async'),
     SlackStrategy = require('passport-slack').Strategy,
     passport = require('passport'),
@@ -53,11 +53,6 @@ app.slackClient = require(serverPath('slackClient'))(app);
 app.slackStreamer = require(serverPath('slackStreamer'))(app);
 app.slackUsers = require(serverPath('slackUsers'))(app);
 
-app.echoBot = require(serverPath('echoBot'))(app);
-app.karmaBot = require(serverPath('karmaBot'))(app);
-app.flickrBot = require(serverPath('flickrBot'))(app);
-app.giphyBot = require(serverPath('giphyBot'))(app);
-
-app.bots = [app.karmaBot, app.giphyBot, app.flickrBot]
+app.bots = _.map(app.config.bots, function(botName){return require(serverPath(botName))(app)})
 
 module.exports = app;

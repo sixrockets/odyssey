@@ -28,8 +28,10 @@ module.exports = function(){
           default:
               console.log("default environment set");
               return {
+                bots: (process.env.BOTS || "karmaBot,giphyBot,flickrBot").split(","),
                 secret: 'hack hack hack',
                 port  : process.env.PORT || 3000,
+                channels  : RegExp(process.env.CHANNELS || "_bot_|test"),
                 redis : {port: 6379, host: "127.0.0.1", options: {}},
                 mongodb: {url: 'mongodb://localhost/rr_bot'},
                 slack_api: {

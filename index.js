@@ -1,8 +1,6 @@
 var app     = require('./app'),
     _       = require('underscore');
 
-app.channel_name = /_bot_|test|ruby/;
-
 app.timer = null;
 
 app.get('/', function(req, res){
@@ -10,7 +8,7 @@ app.get('/', function(req, res){
   if (app.timer !== null){ clearInterval(app.timer) };
 
   app.timer = setInterval( function(){
-    app.slackStreamer.getLastMessages( app.channel_name, function(err, messageInfo){
+    app.slackStreamer.getLastMessages( app.config.channels, function(err, messageInfo){
       _.each(app.bots, function(bot){bot.tick(messageInfo)})
     });
   }, 2500 );
