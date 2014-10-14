@@ -1,8 +1,8 @@
-var _        = require('underscore'),
-    request  = require('request');
-
-
 module.exports = function(app){
+
+  var _        = app.modules._,
+      request  = app.modules.request;
+
   var GiphyBot = function(app){
     this.apiCallUrl = "http://api.giphy.com/v1/gifs/search"
     this.qs = {

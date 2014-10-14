@@ -1,6 +1,6 @@
-var _ = require('underscore');
-
 module.exports = function(app){
+
+  var _ = app.modules._;
 
   var SlackUsers = function(app){
 

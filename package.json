@@ -25,7 +25,8 @@
     "async" : "0.9.0",
     "passport": "0.2.1",
     "passport-slack": "0.0.1",
-    "q": "~1.0.1"
+    "q": "~1.0.1",
+    "qx": "0.2.4"
   },
 
   "devDependencies": {

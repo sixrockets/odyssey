@@ -1,7 +1,8 @@
-var _        = require('underscore'),
-    request  = require('request');
-
 module.exports = function(app){
+
+  var _        = app.modules._,
+      request  = app.modules.request;
+
   var FlickrBot = function(app){
     this.apiCallUrl = "https://api.flickr.com/services/rest/"
     this.qs = {
@@ -10,7 +11,7 @@ module.exports = function(app){
       format: 'json',
       nojsoncallback: 1,
       
-      sort: "date-posted-desc",
+      sort: "relevance",
       privacy_filter: 1, //public
       content_type: 1, //photos only (no screenshots)
       media: "photos",

@@ -1,8 +1,5 @@
-var _        = require('underscore'),
-    request  = require('request');
-
-
 module.exports = function(app){
+
   var EchoBot = function(app){
   };
 

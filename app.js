@@ -9,7 +9,8 @@ var express = require('express'),
     SlackStrategy = require('passport-slack').Strategy,
     passport = require('passport'),
     config = require('./config'),
-    q = require('q');
+    q = require('q'),
+    qx = require('qx');
 
 var serverPath = function(route){
   return path.join(__dirname, 'server', route);
@@ -28,6 +29,8 @@ app.modules._ = underscore;
 app.modules.async = async;
 app.modules.passport = passport;
 app.modules.q = q;
+app.modules.qx = qx;
+app.modules.request = request;
 
 passport.use(new SlackStrategy({
     clientID: app.config.slack_api.client_id,

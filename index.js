@@ -1,5 +1,7 @@
-var app     = require('./app'),
-    _       = require('underscore');
+var app = require('./app');
+
+var _   = app.modules._,
+    Qx  = app.modules.qx;
 
 app.timer = null;
 
@@ -9,7 +11,7 @@ app.get('/', function(req, res){
 
   app.timer = setInterval( function(){
     app.slackStreamer.getLastMessages( app.config.channels, function(err, messageInfo){
-      _.each(app.bots, function(bot){bot.tick(messageInfo)})
+      Qx.map(app.bots, function(bot){bot.tick(messageInfo)})
     });
   }, 2500 );
   res.send("bots started");
