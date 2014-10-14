@@ -13,9 +13,11 @@ module.exports = function(){
       action = "karmaPlus";
     } else if ( message.match(/^\w+\-{2}$/) ){
       action = "karmaMinus";
+    } else if ( message.match(/karmaList/) ){
+      action = "karmaList";
     };
 
-    if(action !== undefined){
+    if(action !== undefined && action != "karmaList"){
       console.log('action ' + action );
       userName = message.replace("@","").replace("++", "").replace("--", "");
     }

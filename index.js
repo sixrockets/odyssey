@@ -1,7 +1,7 @@
 var app     = require('./app'),
     _       = require('underscore');
 
-app.channel_name = /_bot_/;
+app.channel_name = /_bot_|test|ruby/;
 
 app.timer = null;
 

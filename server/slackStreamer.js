@@ -13,7 +13,9 @@ module.exports = function(app){
   };
 
   var getChannelMessages = function(params, cb){
+    console.log('getting channel messages');
     app.slackClient.groupsHistory(params, function(err, response, body){
+      console.log('got channel messages');
       _.each(body['messages'], function(message, _index, _list){
         if (!_.has(message, 'subtype')){
           app.slackUsers.userInfo(message.user, function(err, userInfo){

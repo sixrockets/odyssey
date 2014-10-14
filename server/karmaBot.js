@@ -3,7 +3,9 @@ var MessageParser = require('./karmaBot/parser')();
 
 module.exports = function(app){
 
-  var async = app.modules.async;
+  var async = app.modules.async,
+      _     = app.modules._;
+
 
   var KarmaBot = function(app){
 
@@ -16,7 +18,7 @@ module.exports = function(app){
 
   KarmaBot.prototype.increaseKarma = function(userName, cb){
     console.log('increasing karma for ' + userName);
-    app.models.User.findOne( {name: userName}, function(err, user){
+    app.slackUsers.findByName(userName, function(err, user){
       if ( user !== null ){
         user.increaseKarma(cb);
       }
@@ -24,10 +26,27 @@ module.exports = function(app){
   };
 
   KarmaBot.prototype.decreaseKarma = function(userName, cb){
-    app.models.User.findOne( {name: userName}, function(err, user){
+    console.log('decreasing karma for ' + userName);
+    app.slackUsers.findByName(userName, function(err, user){
       if ( user !== null ){
         user.decreaseKarma(cb);
       }
+    });
+  };
+
+  KarmaBot.prototype.showKarma = function( channelId, cb ){
+    query = app.models.User.find().sort( [['karma', 'descending']] ).limit(15);
+    query.exec(function(err, users){
+      var index = 1;
+      var messages = _.map(users, function(user){
+        var str = "";
+        var karma = 0;
+        karma = (user.karma === undefined) ? 0 : user.karma;
+        str = index + " " + user.name + ": " + karma;
+        index++;
+        return str;
+      });
+      app.slackClient.chatPostMessage( {channel: channelId, text: messages.join("\n") }, cb );
     });
   };
 
@@ -43,6 +62,9 @@ module.exports = function(app){
           break;
         case "karmaMinus":
           this.decreaseKarma( parsedInfo.userName, cb );
+          break;
+        case "karmaList":
+          this.showKarma( messageInfo.channel, cb );
           break;
       }
     }

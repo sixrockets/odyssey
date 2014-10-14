@@ -15,15 +15,21 @@ module.exports = function(app){
 
   userSchema.methods.setKarma = function(value, cb){
     this.karma = value;
-    this.save(err, cb);
+    console.log(this.karma);
+    this.save(cb);
   };
 
   userSchema.methods.increaseKarma = function( cb ){
+    if (this.karma === null || this.karma === undefined){
+      this.karma = 0;
+    }
     this.setKarma( this.karma + 1, cb );
-
   };
 
   userSchema.methods.decreaseKarma = function( cb ){
+    if (this.karma === null || this.karma === undefined){
+      this.karma = 0;
+    }
     this.setKarma( this.karma - 1, cb );
   };
 
