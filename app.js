@@ -56,7 +56,8 @@ app.slackUsers = require(serverPath('slackUsers'))(app);
 app.echoBot = require(serverPath('echoBot'))(app);
 app.karmaBot = require(serverPath('karmaBot'))(app);
 app.flickrBot = require(serverPath('flickrBot'))(app);
+app.giphyBot = require(serverPath('giphyBot'))(app);
 
-app.bots = [app.karmaBot, app.flickrBot]
+app.bots = [app.karmaBot, app.giphyBot, app.flickrBot]
 
 module.exports = app;
