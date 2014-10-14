@@ -23,6 +23,7 @@ module.exports = function(app){
 
   GiphyBot.prototype.perfomRequest = function(query, cb){
     var qs = _.extend({q: query}, this.qs)
+    console.log( "qs:" + JSON.stringify(qs))
     request({json: true, url: this.apiCallUrl, qs: qs}, function(error, response, body){
         console.log("" + query + ":")
         console.log(body)
