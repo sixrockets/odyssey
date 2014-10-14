@@ -1,7 +1,6 @@
 var _        = require('underscore'),
     request  = require('request');
 
-
 module.exports = function(app){
   var FlickrBot = function(app){
     this.apiCallUrl = "https://api.flickr.com/services/rest/"
@@ -59,7 +58,7 @@ module.exports = function(app){
         if(body.photos.photo[0]){
           var photo = _.sample(body.photos.photo)
           console.log(photo)
-          this.postPhoto(message.channel, photo.url_m)
+          this.postPhoto(message.channel, "" + query + ": " + photo.url_m)
         };
       }.bind(this))
     }

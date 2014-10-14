@@ -51,7 +51,7 @@ module.exports = function(app){
         if(body.data[0]){
           var photo = _.sample(body.data)
           console.log(photo)
-          this.postPhoto(message.channel, photo.url)
+          this.postPhoto(message.channel, "" + query + ": " + photo.url)
         };
       }.bind(this))
     }
