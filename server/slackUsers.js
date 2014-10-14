@@ -3,47 +3,53 @@ var _ = require('underscore');
 module.exports = function(app){
 
   var SlackUsers = function(app){
-    
+
+  };
+
+  var User = app.models.User;
+
+  var updateOrCreateUser = function(member, cb){
+    console.log('updating or creating user ' + member.id);
+    console.log(member);
+    var query = User.where({slackId: member.id})
+    query.findOne( function(err, user){
+      member.slackId = member.id;
+      delete member['id'];
+      console.log(user);
+      if (user !== null){
+        User.update({slackId: member.slackId}, member  , {upsert: true}, function(err){
+          if (err) console.log('unable to update location');
+          cb();
+        });
+      } else {
+        console.log('the user is null');
+        user = new User(member);
+        user.save(function(err){
+          if (err) console.log('unable to save location');
+          cb();
+        });
+      }
+    });
   };
 
   SlackUsers.prototype.saveUsers = function(cb, key){
     app.slackClient.usersList(function(err, response, body){
-      if (err)
-        cb(err);
-      else
-        var members={};
-
-        _.each(body['members'], function(member){
-          app.redisClient.hset("USER:" + member.id, 'name', member.name);
-          app.redisClient.hset("USER:" + member.id, 'real_name', member.real_name);
-          members[member.id] = {
-            name: member.name,
-            real_name: member.real_name
-          };
-        })
-
-        if(key){
-          cb(null, members[key]);
-        }else{
-          cb(null, members);
-        }
+      console.log('got list of users');
+      if (err) cb(err);
+      else app.modules.async.each(body['members'], updateOrCreateUser, cb);
     })
   };
 
   SlackUsers.prototype.userInfo = function(id, cb) {
-    app.redisClient.hgetall("USER:" + id, function(err, obj){
-      if (err){
-        cb(err);
-      }else{
-        if(obj){
-          cb(null, obj);
-        }else{
-          SlackUsers.prototype.saveUsers(cb, id);
-        }
+    console.log('getting userInfo from ' + id);
+    User.findOne( {slackId: id}, function(err, user){
+      if(err) cb(err)
+      else {
+        if (user !== null) cb(null, user)
+        else cb(null, null)
       }
     });
   };
 
   return new SlackUsers(app);
-
 }

@@ -46,13 +46,13 @@ app.use(express_session({ secret: app.config.secret }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.models = require( serverPath( path.join('models', 'index') ) )(app);
+
 app.redisClient = require( serverPath( 'redisClient' ))(app);
 app.slackClient = require(serverPath('slackClient'))(app);
 app.slackStreamer = require(serverPath('slackStreamer'))(app);
 app.slackUsers = require(serverPath('slackUsers'))(app);
 app.karmaBot = require(serverPath('karmaBot'))(app);
 
-
-app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
 module.exports = app;
