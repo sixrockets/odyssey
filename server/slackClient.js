@@ -80,8 +80,26 @@ module.exports = function(app){
     return this.performRequest('api.test', 'get', {}, cb);
   };
 
-  SlackClient.prototype.groupList = function(cb){
+  SlackClient.prototype.groupsList = function(cb){
     return this.performRequest('groups.list', 'get', {}, cb);
+  }
+
+  SlackClient.prototype.channelsList = function(cb){
+    return this.performRequest('channels.list', 'get', {}, cb);
+  }
+
+  SlackClient.prototype.chatsList = function(cb){
+    var combiner = function(groups, channels){
+      var channels = channels.body.channels;
+      var groups = groups.body.groups;
+      var result = {ok: true, chats: _.union(channels, groups)};
+      if(cb){ cb(null, result) }
+      return result;
+    }
+    return Q.spread([
+      this.groupsList(),
+      this.channelsList()
+    ], combiner).fail(function (error) { if(cb){cb(error)} });
   }
 
   SlackClient.prototype.channelsHistory = function(params, cb){

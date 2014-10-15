@@ -55,8 +55,8 @@ module.exports = function(app){
 
   SlackStreamer.prototype.getLastMessages = function(channelMatches, cb){
 
-      app.slackClient.groupList( function(err, response, body){
-        console.log('in get groupList');
+      app.slackClient.groupsList( function(err, response, body){
+        console.log('in get groupsList');
         var monitoringGroups = _.filter(body["groups"], function(group){ return channelMatches.test(group["name"]) });
         console.log('fetched monitoringGroups');
         _.each(monitoringGroups, function(group) {  getChannelMessages({channel: group['id']}, cb) } );

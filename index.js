@@ -36,11 +36,26 @@ app.get('/user', function(req, res){
   })
 });
 
-app.get('/groupList', function(req, res){
+app.get('/groupsList', function(req, res){
   var sender = function(value){
     res.send(value.body)
   }
-  app.slackClient.groupList().then(sender)
+  app.slackClient.groupsList().then(sender)
+});
+
+app.get('/channelsList', function(req, res){
+  var sender = function(value){
+    res.send(value.body)
+  }
+  app.slackClient.channelsList().then(sender)
+});
+
+
+app.get('/chatsList', function(req, res){
+  var sender = function(value){
+    res.send(value)
+  }
+  app.slackClient.chatsList().then(sender)
 });
 
 app.get('/auth/slack',
