@@ -1,6 +1,7 @@
 var app = require('./app');
 
 var _   = app.modules._,
+    Q   = app.modules.q,
     Qx  = app.modules.qx;
 
 app.timer = null;
@@ -33,6 +34,13 @@ app.get('/user', function(req, res){
   app.slackUsers.userInfo(req.query.id, function(err, body){
     res.send(body);
   })
+});
+
+app.get('/groupList', function(req, res){
+  var sender = function(value){
+    res.send(value.body)
+  }
+  app.slackClient.groupList().then(sender)
 });
 
 app.get('/auth/slack',
