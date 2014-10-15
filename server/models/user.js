@@ -8,7 +8,7 @@ module.exports = function(app){
   var userSchema = new Schema({
     slackId:  String,
     name: String,
-    karma: Number
+    karma: {type: Number, default: 0}
   });
 
   userSchema.index({slackId: 1});
