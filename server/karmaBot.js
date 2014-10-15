@@ -37,14 +37,14 @@ module.exports = function(app){
 
   KarmaBot.prototype.showKarma = function( channelId, cb ){
     redisClient.set('karmaBot:karmaList', '1', 'NX', 'EX', 10)
-    query = app.models.User.find().sort( [['karma', 'descending']] ).limit(15);
+    query = app.models.User.find().sort( [['karma', 'descending']] ).limit(5);
     query.exec(function(err, users){
       var index = 1;
       var messages = _.map(users, function(user){
         var str = "";
         var karma = 0;
         karma = (user.karma === undefined) ? 0 : user.karma;
-        str = index + " " + user.name + ": " + karma;
+        str = index + " " + user.name + user.name[user.name.length - 1]  + ": " + karma;
         index++;
         return str;
       });
