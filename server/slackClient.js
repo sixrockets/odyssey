@@ -80,12 +80,12 @@ module.exports = function(app){
     return this.performRequest('api.test', 'get', {}, cb);
   };
 
-  SlackClient.prototype.groupsList = function(cb){
-    return this.performRequest('groups.list', 'get', {}, cb);
-  }
-
   SlackClient.prototype.channelsList = function(cb){
     return this.performRequest('channels.list', 'get', {}, cb);
+  }
+
+  SlackClient.prototype.groupsList = function(cb){
+    return this.performRequest('groups.list', 'get', {}, cb);
   }
 
   SlackClient.prototype.chatsList = function(cb){
@@ -110,8 +110,23 @@ module.exports = function(app){
     return this.performRequest('users.list', 'get', {}, cb);
   }
 
-  var groupsHistory = SlackClient.prototype.groupsHistory = function(params, cb){
+  SlackClient.prototype.channelsHistory = function(params, cb){
+    return this.performRequest('channels.history', 'get', params, cb);
+  }
+
+  SlackClient.prototype.groupsHistory = function(params, cb){
     return this.performRequest('groups.history', 'get', params, cb);
+  }
+
+  SlackClient.prototype.chatsHistory = function(params, cb){
+    var chat = params.chat;
+    var params = _.extend(_.omit(params, 'chat'), {channel: chat.id});
+    if (params.chat.is_channel){
+      return this.channelsHistory(params, cb);
+    }
+    if (params.chat.is_group){
+      return this.groupsHistory(params, cb);
+    }
   }
 
   SlackClient.prototype.groupsMessages = function(params, cb){
