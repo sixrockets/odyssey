@@ -16,6 +16,11 @@ app.get('/', function(req, res){
 
 });
 
+app.get('/stop', function(req, res){
+  if (app.timer !== null){ clearInterval(app.timer) };
+  res.send("bots stopped");
+});
+
 app.get('/users', function(req, res){
   app.slackUsers.saveUsers(function(err, body){
     res.send(body);
