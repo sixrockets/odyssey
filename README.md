@@ -11,5 +11,7 @@ Awesome bot for Slack in NodeJS!
 
 ## To-do:
 
+* [ ] We could save channels and groups in mongodb to avoid querying for then so often
+* [ ] The streamer must look for messages in public channels too
 * [ ] Implement something like max(oldest, now-60seconds) for prevent responses to old messages
-* [ ] Config which bots are available for use by environment variable
+* [x] Config which bots are available for use by environment variable
