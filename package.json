@@ -5,28 +5,26 @@
   "private": true,
 
   "engines" : {
-    "node" : "0.10.24"
+    "iojs" : "2.2.1"
   },
 
   "dependencies": {
-    "dotenv": "0.2.4",
-    "express": "4.4",
-    "express-session": "1.8.2",
-    "request": "2.36.0",
+    "dotenv": "1.2.0",
+    "express": "4.13.1",
+    "express-session": "1.11.3",
+    "request": "2.58.0",
     "redis":   "0.12.1",
-    "grunt" : "0.4.2",
+    "grunt" : "0.4.5",
     "grunt-cli": "0.1.13",
-    "grunt-nodemon" : "~0.1.2",
-    "nodemon": "~1.0.5",
+    "grunt-nodemon" : "~0.4.0",
+    "nodemon": "~1.3.7",
     "matchdep" : "0.3.0",
-    "mongoose" : "~3.8.12",
-    "underscore": "~1.6.0",
-    "morgan": "~1.1.1",
-    "async" : "0.9.0",
-    "passport": "0.2.1",
-    "passport-slack": "0.0.1",
-    "q": "~1.0.1",
-    "qx": "0.2.4"
+    "mongoose" : "4.0.6",
+    "lodash": "~3.10.0",
+    "morgan": "~1.6.1",
+    "async" : "1.3.0",
+    "q": "~1.4.1",
+    "qx": "1.0.0"
   },
 
   "devDependencies": {

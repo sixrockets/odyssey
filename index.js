@@ -8,14 +8,14 @@ app.timer = null;
 
 app.get('/', function(req, res){
 
-  if (app.timer !== null){ clearInterval(app.timer) };
-
-  app.timer = setInterval( function(){
-    app.slackStreamer.getLastMessages( app.config.channels, function(err, messageInfo){
-      Qx.map(app.bots, function(bot){bot.tick(messageInfo)})
-    });
-  }, 2500 );
-  res.send("bots started");
+  // if (app.timer !== null){ clearInterval(app.timer) };
+  //
+  // app.timer = setInterval( function(){
+  //   app.slackStreamer.getLastMessages( app.config.channels, function(err, messageInfo){
+  //     Qx.map(app.bots, function(bot){bot.tick(messageInfo)})
+  //   });
+  // }, 2500 );
+  // res.send("bots started");
 
 });
 
@@ -58,20 +58,8 @@ app.get('/chatsList', function(req, res){
   app.slackClient.chatsList().then(sender)
 });
 
-app.get('/auth/slack',
-  app.modules.passport.authorize('slack')
-);
-
-app.get('/auth/slack/callback',
-  app.modules.passport.authorize('slack', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  }
-);
-
 
 var server = app.listen(app.config.port, function() {
-  app.modules.mongoose.connect(app.config.mongodb.url);
+  // app.modules.mongoose.connect(app.config.mongodb.url);
   console.log('Listening on port %d', server.address().port);
 });

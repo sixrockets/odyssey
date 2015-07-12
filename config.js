@@ -1,5 +1,5 @@
 dotenv = require('dotenv'),
-_      = require('underscore');
+_      = require('lodash');
 dotenv.load();
 
 module.exports = function(){

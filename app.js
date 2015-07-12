@@ -4,7 +4,7 @@ var express = require('express'),
     logger = require('morgan'),
     request = require('request'),
     mongoose = require('mongoose'),
-    _ = underscore = require('underscore'),
+    _ = underscore = require('lodash'),
     async = require('async'),
     SlackStrategy = require('passport-slack').Strategy,
     passport = require('passport'),
@@ -35,7 +35,7 @@ app.modules.request = request;
 passport.use(new SlackStrategy({
     clientID: app.config.slack_api.client_id,
     clientSecret: app.config.slack_api.secret,
-    scope: 'identify,read,post'
+    scope: 'client'
   },
   function(accessToken, refreshToken, profile, done) {
     console.log( "Received " + accessToken + " " + refreshToken + " " + profile);
@@ -47,16 +47,16 @@ passport.use(new SlackStrategy({
   }
 ));
 
-app.use(express_session({ secret: app.config.secret }));
+app.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
 app.redisClient = require( serverPath( 'redisClient' ))(app);
-app.slackClient = require(serverPath('slackClient'))(app);
-app.slackStreamer = require(serverPath('slackStreamer'))(app);
-app.slackUsers = require(serverPath('slackUsers'))(app);
+// app.slackClient = require(serverPath('slackClient'))(app);
+// app.slackStreamer = require(serverPath('slackStreamer'))(app);
+// app.slackUsers = require(serverPath('slackUsers'))(app);
 
 app.bots = _.map(app.config.bots, function(botName){return require(serverPath(botName))(app)})
 
