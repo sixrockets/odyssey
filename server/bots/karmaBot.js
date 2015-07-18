@@ -1,7 +1,8 @@
-
-var MessageParser = require('./karmaBot/parser')();
+"use strict";
 
 module.exports = function(app){
+
+  let MessageParser = require('./karmaBot/parser')( app.modules.BaseParser );
 
   var async = app.modules.async,
       _     = app.modules._,
@@ -10,6 +11,7 @@ module.exports = function(app){
 
   var KarmaBot = function(app){
     this.messageParser = new MessageParser();
+    console.log(this.messageParser);
     this.globalCommands = ['karmaList'];
     this.userCommands = ['karmaPlus', 'karmaMinus'];
     this.allCommands = this.globalCommands + this.userCommands;
@@ -61,7 +63,9 @@ module.exports = function(app){
 
 
   KarmaBot.prototype._tryAction = function(messageInfo, cb){
-    parsedInfo = this.messageParser.parseMessage(messageInfo.message.text);
+    console.log('karmaBot try action');
+    parsedInfo = this.messageParser.parseMessage(messageInfo);
+    console.log(parsedInfo);
     var action = parsedInfo.action;
     if (action !== undefined ){
 
@@ -85,8 +89,9 @@ module.exports = function(app){
   };
 
   KarmaBot.prototype.tick = function(message){
+    console.log('karmabot ticked');
     this._tryAction(message, function(){
-      console.log('karmabot ticked');
+      console.log('try action callback');
     });
   };
 

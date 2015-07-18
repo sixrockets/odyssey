@@ -1,28 +1,26 @@
-var app = require('./app');
+"use strict";
 
-var _   = app.modules._,
+let app = require('./app');
+let _   = app.modules._,
     Q   = app.modules.q,
     Qx  = app.modules.qx;
 
-app.timer = null;
+
+let streamToBots = function(messageInfo){
+  console.log('streamToBots');
+  console.log(messageInfo);
+  Qx.map(app.bots, function(bot){bot.tick(messageInfo)});
+}
+
+let slackClient = new app.AwesomeSlack(app.config.slack_api.token, { onMessage: streamToBots }  );
+slackClient.startSocketConnection();
+
 
 app.get('/', function(req, res){
-
-  // if (app.timer !== null){ clearInterval(app.timer) };
-  //
-  // app.timer = setInterval( function(){
-  //   app.slackStreamer.getLastMessages( app.config.channels, function(err, messageInfo){
-  //     Qx.map(app.bots, function(bot){bot.tick(messageInfo)})
-  //   });
-  // }, 2500 );
-  // res.send("bots started");
-
+  console.log('hello');
+  res.send('hello');
 });
 
-app.get('/stop', function(req, res){
-  if (app.timer !== null){ clearInterval(app.timer) };
-  res.send("bots stopped");
-});
 
 app.get('/users', function(req, res){
   app.slackUsers.saveUsers(function(err, body){

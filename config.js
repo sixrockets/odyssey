@@ -28,15 +28,14 @@ module.exports = function(){
           default:
               console.log("default environment set");
               return {
-                bots: (process.env.BOTS || "karmaBot,giphyBot,flickrBot").split(","),
+                bots: (process.env.BOTS || "karmaBot").split(","),
                 secret: 'hack hack hack',
                 port  : process.env.PORT || 3000,
                 channels  : RegExp(process.env.CHANNELS || "_bot_|test"),
                 redis : {port: 6379, host: "127.0.0.1", options: {}},
                 mongodb: {url: 'mongodb://localhost/rr_bot'},
                 slack_api: {
-                  client_id: process.env.SLACK_CLIENT_ID,
-                  secret: process.env.SLACK_SECRET
+                  token: process.env.BOT_API_TOKEN
                 }
               };
       }
