@@ -5,7 +5,7 @@ Awesome bot for Slack in NodeJS!
 ## Requisites:
 * Redis
 * Mongodb
-* Node
+* iojs
 * npm
 * grunt-cli
 
