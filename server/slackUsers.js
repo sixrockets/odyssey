@@ -1,31 +1,32 @@
+"use strict";
+
+let redis = require('redis');
+
 module.exports = function(app){
 
-  var _ = app.modules._;
-
-  var SlackUsers = function(app){
+  let _ = app.modules._;
+  let SlackUsers = function(app){
 
   };
 
-  var User = app.models.User;
+  let User = app.models.User;
 
-  var updateOrCreateUser = function(member, cb){
-    console.log('updating or creating user ' + member.id);
-    console.log(member);
-    var query = User.where({slackId: member.id})
+  let updateOrCreateUser = function(member, cb){
+
+    let query = User.where({slackId: member.id});
     query.findOne( function(err, user){
       member.slackId = member.id;
       delete member['id'];
-      console.log(user);
       if (user !== null){
         User.update({slackId: member.slackId}, member  , {upsert: true}, function(err){
-          if (err) console.log('unable to update location');
+          if (err) console.log('unable to update user');
           cb();
         });
       } else {
         console.log('the user is null');
         user = new User(member);
         user.save(function(err){
-          if (err) console.log('unable to save location');
+          if (err) console.log('unable to save user');
           cb();
         });
       }
@@ -33,15 +34,13 @@ module.exports = function(app){
   };
 
   SlackUsers.prototype.saveUsers = function(cb, key){
-    app.slackClient.usersList(function(err, response, body){
-      console.log('got list of users');
-      if (err) cb(err);
-      else app.modules.async.each(body['members'], updateOrCreateUser, cb);
-    })
+    console.log('saving users');
+    app.redisClient.exists("tryRedis", redis.print);
+    console.log('saving users');
+    app.modules.async.each(app.slackClient.users, updateOrCreateUser, cb);
   };
 
   SlackUsers.prototype.userInfo = function(id, cb) {
-    console.log('getting userInfo from ' + id);
     User.findOne( {slackId: id}, function(err, user){
       if(err) cb(err)
       else {

@@ -24,7 +24,8 @@
     "morgan": "~1.6.1",
     "async" : "1.3.0",
     "q": "~1.4.1",
-    "qx": "1.0.0"
+    "qx": "1.0.0",
+    "awesome_slack": "0.0.2"
   },
 
   "devDependencies": {

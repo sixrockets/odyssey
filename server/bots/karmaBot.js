@@ -2,14 +2,15 @@
 
 module.exports = function(app){
 
-  let MessageParser = require('./karmaBot/parser')( app.modules.BaseParser );
-
-  var async = app.modules.async,
+  let async = app.modules.async,
       _     = app.modules._,
-      Q     = app.modules.q,
+      Q     = app.modules.Q,
       redisClient = app.redisClient;
 
-  var KarmaBot = function(app){
+  let MessageParser = require('./karmaBot/parser')( app.modules.BaseParser );
+
+
+  let KarmaBot = function(app){
     this.messageParser = new MessageParser();
     console.log(this.messageParser);
     this.globalCommands = ['karmaList'];
@@ -38,8 +39,10 @@ module.exports = function(app){
   };
 
   KarmaBot.prototype.showKarma = function( channelId, cb ){
+    console.log('showKarma called');
+    console.log(channelId);
     redisClient.set('karmaBot:karmaList', '1', 'NX', 'EX', 10)
-    query = app.models.User.find().sort( [['karma', 'descending']] ).limit(5);
+    let query = app.models.User.find().sort( [['karma', 'descending']] ).limit(5);
     query.exec(function(err, users){
       var index = 1;
       var messages = _.map(users, function(user){
@@ -50,7 +53,7 @@ module.exports = function(app){
         index++;
         return str;
       });
-      app.slackClient.chatPostMessage( {channel: channelId, text: messages.join("\n") }, cb );
+      app.slackClient.sendMessage(messages.join("\n"), channelId);
     });
   };
 
@@ -64,14 +67,18 @@ module.exports = function(app){
 
   KarmaBot.prototype._tryAction = function(messageInfo, cb){
     console.log('karmaBot try action');
-    parsedInfo = this.messageParser.parseMessage(messageInfo);
+
+    console.log(messageInfo);
+    let parsedInfo = this.messageParser.parseMessage(messageInfo),
+        action = parsedInfo.action;
     console.log(parsedInfo);
-    var action = parsedInfo.action;
+    console.log(action);
+
     if (action !== undefined ){
 
-      this.canPerformAction(parsedInfo).then( function(notCanPerform){
-        if ( notCanPerform == '0') {
+      this.canPerformAction(parsedInfo).done( function(notCanPerform){
 
+        if ( notCanPerform == '0') {
           switch(action){
             case "karmaPlus":
               this.increaseKarma( parsedInfo.userName, cb );
@@ -80,11 +87,11 @@ module.exports = function(app){
               this.decreaseKarma( parsedInfo.userName, cb );
               break;
             case "karmaList":
-              this.showKarma( messageInfo.channel, cb );
+              this.showKarma( parsedInfo.channel, cb );
               break;
           }
         }
-      }.bind(this))
+      }.bind(this), function(){ console.log("error getting from redis") } );
     }
   };
 

@@ -32,7 +32,7 @@ module.exports = function(){
                 secret: 'hack hack hack',
                 port  : process.env.PORT || 3000,
                 channels  : RegExp(process.env.CHANNELS || "_bot_|test"),
-                redis : {port: 6379, host: "127.0.0.1", options: {}},
+                redis : {port: 6379, host: "localhost", options: {}},
                 mongodb: {url: 'mongodb://localhost/rr_bot'},
                 slack_api: {
                   token: process.env.BOT_API_TOKEN
