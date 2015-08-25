@@ -60,5 +60,15 @@ module.exports = function(app){
     });
   };
 
+  SlackUsers.prototype.findByNameOrSlackId = function(nameOrSlackId, cb){
+    User.findOne( { $or: [ {name: nameOrSlackId}, { slackId: nameOrSlackId } ] } , function(err, user){
+      if(err) cb(err)
+      else{
+        if (user !== null) cb(null, user)
+        else cb(null, null)
+      }
+    });
+  };
+
   return new SlackUsers(app);
 }
