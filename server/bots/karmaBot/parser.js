@@ -11,7 +11,7 @@ module.exports = function(BaseParser){
       let parsedMessage = super.parseMessage(messageData),
           action = undefined,
           userName = undefined,
-          message = parsedMessage.message;
+          message = parsedMessage.message.replace("@","").replace("<","").replace(">","");
 
       // Cutre parse v1
       if ( message.match(/^\w+\+{2}$/) ){
@@ -23,7 +23,7 @@ module.exports = function(BaseParser){
       };
 
       if(action !== undefined && action != "karmaList"){
-        userName = message.replace("@","").replace("++", "").replace("--", "");
+        userName = message.replace("++", "").replace("--", "");
       }
 
       return _.extend( parsedMessage, {action: action, userName: userName} );

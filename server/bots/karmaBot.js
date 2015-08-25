@@ -12,7 +12,6 @@ module.exports = function(app){
 
   let KarmaBot = function(app){
     this.messageParser = new MessageParser();
-    console.log(this.messageParser);
     this.globalCommands = ['karmaList'];
     this.userCommands = ['karmaPlus', 'karmaMinus'];
     this.allCommands = this.globalCommands + this.userCommands;
@@ -21,7 +20,7 @@ module.exports = function(app){
   KarmaBot.prototype.increaseKarma = function(userName, cb){
     console.log('increasing karma for ' + userName);
     redisClient.set('karmaBot:karmaPlus' + userName, '1', 'NX', 'EX', 5)
-    app.slackUsers.findByName(userName, function(err, user){
+    app.slackUsers.findByNameOrSlackId(userName, function(err, user){
       if ( user !== null ){
         user.increaseKarma(cb);
       }
@@ -31,7 +30,7 @@ module.exports = function(app){
   KarmaBot.prototype.decreaseKarma = function(userName, cb){
     console.log('decreasing karma for ' + userName);
     redisClient.set('karmaBot:karmaMinus' + userName, '1', 'NX', 'EX', 5)
-    app.slackUsers.findByName(userName, function(err, user){
+    app.slackUsers.findByNameOrSlackId(userName, function(err, user){
       if ( user !== null ){
         user.decreaseKarma(cb);
       }
