@@ -26,7 +26,7 @@ module.exports = function(BaseParser){
         userName = message.replace("++", "").replace("--", "");
       }
 
-      return _.extend( parsedMessage, {action: action, userName: userName} );
+      return _.extend( parsedMessage, {action: action, mentionedUserName: userName} );
     }
   }
 

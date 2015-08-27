@@ -17,21 +17,21 @@ module.exports = function(app){
     this.allCommands = this.globalCommands + this.userCommands;
   };
 
-  KarmaBot.prototype.increaseKarma = function(userName, cb){
+  KarmaBot.prototype.increaseKarma = function(userName, performerId, cb){
     console.log('increasing karma for ' + userName);
     redisClient.set('karmaBot:karmaPlus' + userName, '1', 'NX', 'EX', 5)
     app.slackUsers.findByNameOrSlackId(userName, function(err, user){
-      if ( user !== null ){
+      if ( user !== null && user.slackId != performerId ){
         user.increaseKarma(cb);
       }
     });
   };
 
-  KarmaBot.prototype.decreaseKarma = function(userName, cb){
+  KarmaBot.prototype.decreaseKarma = function(userName, performerId, cb){
     console.log('decreasing karma for ' + userName);
     redisClient.set('karmaBot:karmaMinus' + userName, '1', 'NX', 'EX', 5)
     app.slackUsers.findByNameOrSlackId(userName, function(err, user){
-      if ( user !== null ){
+      if ( user !== null && user.slackId != performerId ){
         user.decreaseKarma(cb);
       }
     });
@@ -80,10 +80,10 @@ module.exports = function(app){
         if ( notCanPerform == '0') {
           switch(action){
             case "karmaPlus":
-              this.increaseKarma( parsedInfo.userName, cb );
+              this.increaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb );
               break;
             case "karmaMinus":
-              this.decreaseKarma( parsedInfo.userName, cb );
+              this.decreaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb );
               break;
             case "karmaList":
               this.showKarma( parsedInfo.channel, cb );
