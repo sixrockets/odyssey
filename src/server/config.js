@@ -1,5 +1,6 @@
-dotenv = require('dotenv'),
-_      = require('lodash');
+let dotenv = require('dotenv'),
+    _      = require('lodash');
+
 dotenv.load();
 
 module.exports = function(){

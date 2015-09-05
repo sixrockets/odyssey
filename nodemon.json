@@ -1,5 +1,6 @@
 {
+  "verbose": true,
   "execMap": {
-    "js": "iojs"
+    "js": "node"
   }
 }

@@ -5,18 +5,24 @@ let _   = app.modules._,
     Q   = app.modules.q,
     Qx  = app.modules.qx;
 
+import React from "react";
+import Router from "react-router";
+import routes from "../shared/routes";
 
 app.get('/', function(req, res){
   console.log('hello');
-  res.send('hello');
+  Router.run(routes, req.url, Handler => {
+    let content = React.renderToString(<Handler />);
+    res.render('index', { content: content });
+  });
 });
-
 
 app.get('/users', function(req, res){
   app.slackUsers.saveUsers(function(err, body){
     res.send(body);
   })
 });
+
 
 app.get('/user', function(req, res){
   app.slackUsers.userInfo(req.query.id, function(err, body){

@@ -35,8 +35,6 @@ module.exports = function(app){
 
   SlackUsers.prototype.saveUsers = function(cb, key){
     console.log('saving users');
-    app.redisClient.exists("tryRedis", redis.print);
-    console.log('saving users');
     app.modules.async.each(app.slackClient.users, updateOrCreateUser, cb);
   };
 
