@@ -4,4 +4,4 @@ dump.rdb
 *.log
 .env
 tmp/
-./lib
+lib/
