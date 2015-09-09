@@ -1,21 +1,43 @@
 module.exports = function(app){
 
-  var EchoBot = function(app){
+  var EchoBot = function(){
+    this.name = "EchoBot";
   };
 
-  EchoBot.prototype.tick = function(messageInfo){
-    var message = messageInfo.message;
-    var channel = messageInfo.channel;
-    // text = "<@"+ message.user +">" + " says " + message.text;
-    text = "*" + message.username + "* _says_: \n>" + message.text;
-    console.log(text + "\n")
-    app.slackClient.chatPostMessage({
-      channel: channel,
-      text: text,
-      username: "Echo Bot",
-      icon_emoji: ":speaker:"
-    }, function(){});
+  var internal = function(message, responder){
+    responder(words)
   }
 
-  return new EchoBot(app);
+  // function simpleBot(bot){
+  //   function(messageInfo){
+  //     var message = JSON.parse(messageInfo);
+
+  //     var responder = function(text){
+  //       app.slackClient.sendMessage(text, message.channel);
+  //     }
+
+  //     if (message.type == "message"){
+  //       bot(message, responder)
+  //     }
+  //   }
+  // }
+
+  // EchoBot.prototype.tick = simpleBot(internal)
+
+
+  EchoBot.prototype.tick = function(messageInfo){
+    var message = JSON.parse(messageInfo);
+
+    var responder = function(text){
+      app.slackClient.sendMessage(text, message.channel);
+    }
+
+    if (message.type == "message"){
+      this.onMessage(message, responder)
+    }
+  }
+
+  EchoBot.prototype.onMessage = internal
+
+  return new EchoBot();
 }
