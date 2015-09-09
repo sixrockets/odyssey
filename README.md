@@ -2,10 +2,18 @@
 
 Awesome bot for Slack in NodeJS!
 
+## Installation:
+
+Be sure to have redis and mongodb started.
+
+The project requires a valid Slack API token. You can define it in an environment variable or in an .env file in the root of the project. The variable name is BOTS_API_TOKEN.
+
+To build and launch the project just execute `npm start`.
+
 ## Requisites:
 * Redis
 * Mongodb
-* iojs
+* node/iojs
 * npm
 * grunt-cli
 
