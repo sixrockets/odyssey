@@ -7,7 +7,7 @@ module.exports = function(app){
       Q     = app.modules.Q,
       redisClient = app.redisClient;
 
-  let MessageParser = require('./karmaBot/parser')( app.modules.BaseParser );
+  let MessageParser = require('./karmaBot/parser')( app );
 
 
   let KarmaBot = function(app){
@@ -65,16 +65,11 @@ module.exports = function(app){
 
 
   KarmaBot.prototype._tryAction = function(messageInfo, cb){
-    console.log('karmaBot try action');
 
-    console.log(messageInfo);
     let parsedInfo = this.messageParser.parseMessage(messageInfo),
         action = parsedInfo.action;
-    console.log(parsedInfo);
-    console.log(action);
 
     if (action !== undefined ){
-
       this.canPerformAction(parsedInfo).done( function(notCanPerform){
 
         if ( notCanPerform == '0') {

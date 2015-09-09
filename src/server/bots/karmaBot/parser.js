@@ -1,16 +1,15 @@
 "use strict";
 
-module.exports = function(BaseParser){
+module.exports = function(app){
+  let _ = app.modules._;
 
-  class KarmaBotParser extends BaseParser{
+  class KarmaBotParser extends app.modules.BaseParser{
 
     parseMessage(messageData){
 
-      console.log('KarmaBotParser parsing message');
-
       let parsedMessage = super.parseMessage(messageData),
           action = undefined,
-          userName = undefined,
+          userName = "",
           message = parsedMessage.message.replace("@","").replace("<","").replace(">","");
 
       // Cutre parse v1
@@ -25,7 +24,7 @@ module.exports = function(BaseParser){
       if(action !== undefined && action != "karmaList"){
         userName = message.replace("++", "").replace("--", "");
       }
-
+      
       return _.extend( parsedMessage, {action: action, mentionedUserName: userName} );
     }
   }
