@@ -1,7 +1,7 @@
-module.exports = function(app){
+module.exports = function(){
 
-  var _ = app.modules._,
-      request = app.modules.request,
+  var _ = require("lodash"),
+      request = require("request"),
       parseString = require('xml2js').parseString;
 
   var LTBot = function(){
@@ -28,6 +28,7 @@ module.exports = function(app){
     request.post({url:'https://languagetool.org:8081', form: {'language':'es', 'text': user_message} },
       function(error, response, body){
         parseString(body, function (err, result) {
+          if(!result) { return }
           result = _(result.matches.error).
             map(simplfyResult).
             filter('rule', 'MORFOLOGIK_RULE_ES').
@@ -36,18 +37,6 @@ module.exports = function(app){
             cb(_.reduceRight(result, replacer, user_message) + "*");
         })
     });
-  }
-
-  LTBot.prototype.tick = function(messageInfo){
-    var message = JSON.parse(messageInfo);
-
-    var responder = function(response_text){
-      app.slackClient.sendMessage(response_text, message.channel);
-    }
-
-    if (message.type == "message"){
-      this.onMessage(message, responder)
-    }
   }
 
   LTBot.prototype.onMessage = function(message, responder){

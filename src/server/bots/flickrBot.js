@@ -11,7 +11,6 @@ module.exports = function(app){
       api_key: process.env.FLICKR_KEY,
       format: 'json',
       nojsoncallback: 1,
-
       sort: "relevance",
       privacy_filter: 1, //public
       content_type: 1, //photos only (no screenshots)
@@ -39,25 +38,12 @@ module.exports = function(app){
     )
   }
 
-  FlickrBot.prototype.tick = function(messageInfo){
-    var message = JSON.parse(messageInfo);
-
-    var responder = function(text){
-      app.slackClient.sendMessage(text, message.channel);
-    }
-
-    if (message.type == "message"){
-      this.onMessage(message, responder)
-    }
-  }
-
   FlickrBot.prototype.onMessage = function(message, responder){
     if (!this.testMessage(message.text)) { return }
 
     var query = this.getImageName(message.text)
 
     this.perfomRequest(query, function(body) {
-      console.log('body:', body)
       if(!body.photos.photo[0]) { return }
 
       var photo = _.sample(body.photos.photo)
@@ -67,5 +53,4 @@ module.exports = function(app){
   }
 
   return new FlickrBot();
-
 }

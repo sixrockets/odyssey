@@ -1,9 +1,9 @@
-module.exports = function(app){
+module.exports = function(){
 
-  var _        = app.modules._,
-      request  = app.modules.request;
+  var _        = require('lodash'),
+      request  = require('request');
 
-  var GiphyBot = function(app){
+  var GiphyBot = function(){
     this.apiCallUrl = "http://api.giphy.com/v1/gifs/search"
     this.qs = {
       api_key: process.env.GIPHY_KEY,
@@ -31,35 +31,19 @@ module.exports = function(app){
     )
   }
 
-  GiphyBot.prototype.postPhoto = function(channel, photo){
-    app.slackClient.chatPostMessage({
-      channel: channel,
-      text: photo,
-      username: "GiphyBot",
-      icon_emoji: null,
-      icon_url: "http://giphy.com/static/img/giphy_logo_sm.png"
-    }, function(){})    
+  GiphyBot.prototype.onMessage = function(message, responder){
+    if (!this.testMessage(message.text)) { return }
+
+    var query = this.getImageName(message.text)
+
+    this.perfomRequest(query, function(body){
+      if(!body.data[0]) { return }
+
+      var photo = _.sample(body.data)
+      console.log("" + query + ": ", photo)
+      responder("" + query + ": " + photo.url)
+    })
   }
 
-  GiphyBot.prototype.parseMessage = function(message, cb){
-    console.log("message" + JSON.stringify(message))
-    if (this.testMessage(message.message.text)){
-      var query = this.getImageName(message.message.text)
-      this.perfomRequest(query, function(body){
-        if(body.data[0]){
-          var photo = _.sample(body.data)
-          console.log("" + query + ": ")
-          console.log(photo)
-          this.postPhoto(message.channel, "" + query + ": " + photo.url)
-        };
-      }.bind(this))
-    }
-  }
-
-  GiphyBot.prototype.tick = function(message){
-    this.parseMessage(message)
-  };
-
-  return new GiphyBot(app);
-
+  return new GiphyBot();
 }

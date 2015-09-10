@@ -2,11 +2,11 @@ import { createStore } from 'redux';
 import { rrBotApp } from './reducers';
 import { updateUsers } from '../shared/actions';
 
-console.log(rrBotApp);
+// console.log(rrBotApp);
 
 let store = createStore(rrBotApp);
 
-console.log(store.getState());
+// console.log(store.getState());
 
 // Every time the state changes, log it
 let unsubscribe = store.subscribe(() =>

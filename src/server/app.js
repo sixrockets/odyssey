@@ -39,10 +39,32 @@ app.slackUsers = require(serverPath('slackUsers'))(app);
 app.bots = app.modules._.map(app.config.bots, function(botName){return require( serverPath(`bots/${botName}`) )(app)})
 
 
+let tickBots = function(messageInfo){
+  app.modules.Qx.map(app.bots, function(bot){
+    bot.tick && bot.tick(messageInfo)
+  });
+}
+
+let onMessageBots = function (messageInfo) {
+    var message = JSON.parse(messageInfo);
+
+    var responder = function responder(text) {
+      app.slackClient.sendMessage(text, message.channel);
+    };
+
+    if (message.type == "message") {
+      app.modules.Qx.map(app.bots, function(bot){
+        bot.onMessage && bot.onMessage(message, responder);
+      });
+
+    }
+};
+
 let streamToBots = function(messageInfo){
   console.log('streamToBots');
-  app.modules.Qx.map(app.bots, function(bot){bot.tick(messageInfo)});
-}
+  tickBots(messageInfo)
+  onMessageBots(messageInfo)
+};
 
 app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token);
 

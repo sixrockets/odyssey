@@ -1,7 +1,7 @@
 import { UPDATE_USERS } from '../shared/actions';
 import  _ from 'lodash';
 
-console.log(_);
+// console.log(_);
 
 const initialState = {
   users: []
