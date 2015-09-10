@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function(){
+module.exports = function(app){
 
   class BaseParser{
 
@@ -21,6 +21,7 @@ module.exports = function(){
       }
     }
   }
+
 
   return BaseParser;
 
