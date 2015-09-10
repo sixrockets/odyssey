@@ -3,14 +3,15 @@ module.exports = function(app){
   var _        = app.modules._,
       request  = app.modules.request;
 
-  var FlickrBot = function(app){
+  var FlickrBot = function(){
+    this.name = "FlickrBot";
     this.apiCallUrl = "https://api.flickr.com/services/rest/"
     this.qs = {
       method: "flickr.photos.search",
       api_key: process.env.FLICKR_KEY,
       format: 'json',
       nojsoncallback: 1,
-      
+
       sort: "relevance",
       privacy_filter: 1, //public
       content_type: 1, //photos only (no screenshots)
@@ -18,7 +19,6 @@ module.exports = function(app){
       extras: "url_z,url_n,url_m,url_l",
       per_page: 10
     }
-
   };
 
   FlickrBot.prototype.testMessage = function(message){
@@ -39,35 +39,33 @@ module.exports = function(app){
     )
   }
 
-  FlickrBot.prototype.postPhoto = function(channel, photo){
-    app.slackClient.chatPostMessage({
-      channel: channel,
-      text: photo,
-      username: "FlickrBot",
-      icon_emoji: null,
-      icon_url: "http://c1345842.cdn.cloudfiles.rackspacecloud.com/assets/cdn_files/assets/000/010/337/original.png?1406912353"
-    }, function(){})    
-  }
+  FlickrBot.prototype.tick = function(messageInfo){
+    var message = JSON.parse(messageInfo);
 
-  FlickrBot.prototype.parseMessage = function(message, cb){
-    console.log("message" + JSON.stringify(message))
-    if (this.testMessage(message.message.text)){
-      var query = this.getImageName(message.message.text)
-      this.perfomRequest(query, function(body){
-        if(body.photos.photo[0]){
-          var photo = _.sample(body.photos.photo)
-          console.log("" + query + ": ")
-          console.log(photo)
-          this.postPhoto(message.channel, "" + query + ": " + photo.url_m)
-        };
-      }.bind(this))
+    var responder = function(text){
+      app.slackClient.sendMessage(text, message.channel);
+    }
+
+    if (message.type == "message"){
+      this.onMessage(message, responder)
     }
   }
 
-  FlickrBot.prototype.tick = function(message){
-    this.parseMessage(message)
-  };
+  FlickrBot.prototype.onMessage = function(message, responder){
+    if (!this.testMessage(message.text)) { return }
 
-  return new FlickrBot(app);
+    var query = this.getImageName(message.text)
+
+    this.perfomRequest(query, function(body) {
+      console.log('body:', body)
+      if(!body.photos.photo[0]) { return }
+
+      var photo = _.sample(body.photos.photo)
+      console.log("" + query + ": ", photo)
+      responder("" + query + ": " + photo.url_m)
+    })
+  }
+
+  return new FlickrBot();
 
 }
