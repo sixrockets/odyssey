@@ -12,7 +12,7 @@ var serverPath = function(route){
 
 var app = {};
 
-app.webClient = express();
+app.webServer = express();
 
 require('./boot/index')(app);
 
@@ -23,13 +23,13 @@ app.config = config();
 var hbs = require('express-hbs');
 
 // Use `.hbs` for extensions and find partials in `views/partials`.
-app.webClient.engine('hbs', hbs.express4({
+app.webServer.engine('hbs', hbs.express4({
   partialsDir: __dirname + '/../../views/partials'
 }));
-app.webClient.set('view engine', 'hbs');
-app.webClient.set('views', __dirname + '/../../views');
+app.webServer.set('view engine', 'hbs');
+app.webServer.set('views', __dirname + '/../../views');
 
-app.webClient.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
+app.webServer.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
 
 app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
