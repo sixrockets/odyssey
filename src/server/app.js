@@ -38,7 +38,11 @@ app.redisClient = require( serverPath( 'redisClient' ))(app);
 // app.slackStreamer = require(serverPath('slackStreamer'))(app);
 app.slackUsers = require(serverPath('slackUsers'))(app);
 
-app.bots = app.modules._.map(app.config.bots, function(botName){return require( serverPath(`bots/${botName}`) )(app)})
+app.bots = app.modules._.map(app.config.bots, botName => {
+  console.log(botName)
+  var bot = require(serverPath(`bots/${botName}`));
+  return new bot(app);
+})
 
 
 let tickBots = function(messageInfo){
