@@ -1,7 +1,7 @@
-module.exports = function(app){
+module.exports = function(){
 
-  var _        = app.modules._,
-      request  = app.modules.request;
+  var _        = require("lodash"),
+      request  = require("request");
 
   var FlickrBot = function(){
     this.name = "FlickrBot";

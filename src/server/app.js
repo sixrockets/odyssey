@@ -10,7 +10,9 @@ var serverPath = function(route){
   return path.join(__dirname, route);
 }
 
-var app = express();
+var app = {};
+
+app.webClient = express();
 
 require('./boot/index')(app);
 
@@ -21,13 +23,13 @@ app.config = config();
 var hbs = require('express-hbs');
 
 // Use `.hbs` for extensions and find partials in `views/partials`.
-app.engine('hbs', hbs.express4({
+app.webClient.engine('hbs', hbs.express4({
   partialsDir: __dirname + '/../../views/partials'
 }));
-app.set('view engine', 'hbs');
-app.set('views', __dirname + '/../../views');
+app.webClient.set('view engine', 'hbs');
+app.webClient.set('views', __dirname + '/../../views');
 
-app.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
+app.webClient.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
 
 app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
@@ -47,6 +49,8 @@ let tickBots = function(messageInfo){
 
 let onMessageBots = function (messageInfo) {
     var message = JSON.parse(messageInfo);
+
+    console.dir(message);
 
     var responder = function responder(text) {
       app.slackClient.sendMessage(text, message.channel);
