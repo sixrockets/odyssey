@@ -68,5 +68,9 @@ module.exports = function(app){
     });
   };
 
+  SlackUsers.prototype.model = function(){
+    return User;    
+  }
+
   return new SlackUsers(app);
 }
