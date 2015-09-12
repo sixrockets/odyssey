@@ -1,48 +1,38 @@
-module.exports = function(){
+import lodash, { reduceRight } from "lodash";
+import { post } from 'request';
+import { parseString } from 'xml2js';
 
-  var _ = require("lodash"),
-      request = require("request"),
-      parseString = require('xml2js').parseString;
-
-  var LTBot = function(){
+export default class LTBot {
+  constructor() {
     this.name = "LTBot";
-  };
-
-  var simplfyResult = function(obj){
-    var $ = obj.$;
-    return {
-      rule: $.ruleId,
-      repl: $.replacements.split("#")[0],
-      offset: parseInt($.offset, 10),
-      errorlength: parseInt($.errorlength, 10),
-      }
   }
 
-  var substitute = function(original, init, length, replacement){
-    return original.substring(0, init) + replacement + original.substring(init + length, original.length);
+  replacer(result, other) {
+    return result.substring(0, other.offset) +
+      other.repl +
+      result.substring(other.offset +
+      other.errorlength, result.length);
   }
 
-  var replacer = function(result, other) { return substitute(result, other.offset, other.errorlength, other.repl); }
+  onMessage (message, responder){
+    post({ url: 'https://languagetool.org:8081', form: { 'language': 'es', 'text': message.text } },
+      (error, response, body) => {
+        parseString(body, (err, result) => {
+          if(!result) return
 
-  var check = function(user_message, cb){
-    request.post({url:'https://languagetool.org:8081', form: {'language':'es', 'text': user_message} },
-      function(error, response, body){
-        parseString(body, function (err, result) {
-          if(!result) { return }
-          result = _(result.matches.error).
-            map(simplfyResult).
+          result = lodash(result.matches.error).
+            map(obj => ({
+              rule: obj.$.ruleId,
+              repl: obj.$.replacements.split("#")[0],
+              offset: parseInt(obj.$.offset, 10),
+              errorlength: parseInt(obj.$.errorlength, 10),
+            })).
             filter('rule', 'MORFOLOGIK_RULE_ES').
             value()
+
           if (result.length > 0)
-            cb(_.reduceRight(result, replacer, user_message) + "*");
+            responder(reduceRight(result, this.replacer, message.text) + "*");
         })
     });
   }
-
-  LTBot.prototype.onMessage = function(message, responder){
-    check(message.text, responder)
-  }
-
-  return new LTBot();
-
 }

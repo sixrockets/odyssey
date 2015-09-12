@@ -41,11 +41,11 @@
     "redux-devtools": "^2.1.0"
   },
   "scripts": {
-    "clean": "rm -rf lib/*",
-    "watch-js": "babel src -d lib --experimental -w",
-    "dev-server": "node lib/server/webpack",
+    "clean": "rm -rf build/*",
+    "watch-js": "babel src -d build --experimental -w",
+    "dev-server": "node build/server/webpack",
     "start": "npm run watch-js & npm run dev-server & npm run server",
-    "build": "npm run clean && babel src -d lib --experimental",
-    "server": "nodemon ./lib/server/index.js"
+    "build": "npm run clean && babel src -d build --experimental",
+    "server": "nodemon ./build/server/index.js"
   }
 }

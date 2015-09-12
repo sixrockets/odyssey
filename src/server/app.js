@@ -10,7 +10,9 @@ var serverPath = function(route){
   return path.join(__dirname, route);
 }
 
-var app = express();
+var app = {};
+
+app.webServer = express();
 
 require('./boot/index')(app);
 
@@ -21,13 +23,13 @@ app.config = config();
 var hbs = require('express-hbs');
 
 // Use `.hbs` for extensions and find partials in `views/partials`.
-app.engine('hbs', hbs.express4({
+app.webServer.engine('hbs', hbs.express4({
   partialsDir: __dirname + '/../../views/partials'
 }));
-app.set('view engine', 'hbs');
-app.set('views', __dirname + '/../../views');
+app.webServer.set('view engine', 'hbs');
+app.webServer.set('views', __dirname + '/../../views');
 
-app.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
+app.webServer.use(express_session({ secret: app.config.secret, resave: true, saveUninitialized: true }));
 
 app.models = require( serverPath( path.join('models', 'index') ) )(app);
 
@@ -36,7 +38,11 @@ app.redisClient = require( serverPath( 'redisClient' ))(app);
 // app.slackStreamer = require(serverPath('slackStreamer'))(app);
 app.slackUsers = require(serverPath('slackUsers'))(app);
 
-app.bots = app.modules._.map(app.config.bots, function(botName){return require( serverPath(`bots/${botName}`) )(app)})
+app.bots = app.modules._.map(app.config.bots, botName => {
+  console.log(botName)
+  var bot = require(serverPath(`bots/${botName}`));
+  return new bot(app);
+})
 
 
 let tickBots = function(messageInfo){
@@ -47,6 +53,8 @@ let tickBots = function(messageInfo){
 
 let onMessageBots = function (messageInfo) {
     var message = JSON.parse(messageInfo);
+
+    console.dir(message);
 
     var responder = function responder(text) {
       app.slackClient.sendMessage(text, message.channel);
