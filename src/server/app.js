@@ -39,8 +39,8 @@ app.slackUsers = require(serverPath('slackUsers'))(app);
 
 app.bots = app.modules._.map(app.config.bots, botName => {
   console.log(botName)
-  var bot = require(serverPath(`bots/${botName}`));
-  return new new_bot(app);
+  var new_bot = require(serverPath(`bots/${botName}`)).new_bot;
+  return new_bot(app);
 })
 
 let tickBots = function(messageInfo){
