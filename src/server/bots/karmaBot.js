@@ -6,8 +6,10 @@ let async = require('async'),
     MessageParser = require('./karmaBot/parser');
 
 
-
-let KarmaBot = function(redisClient, slackUsers){
+export default function KarmaBot(redisClient, slackUsers, slackClient){
+  this.slackUsers = slackUsers;
+  this.slackClient = slackClient;
+  this.redisClient = redisClient;
   this.messageParser = new MessageParser();
   this.globalCommands = ['karmaList'];
   this.userCommands = ['karmaPlus', 'karmaMinus'];
@@ -92,7 +94,6 @@ KarmaBot.prototype.tick = function(message){
     console.log('try action callback');
   });
 };
-
 
 module.exports.new_bot = function(app){
   return new KarmaBot(app.redisClient, app.slackUsers, app.slackClient);

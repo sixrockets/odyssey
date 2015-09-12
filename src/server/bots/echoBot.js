@@ -1,12 +1,9 @@
-module.exports = function(app){
-
-  var EchoBot = function(){
+export default class EchoBot {
+  constructor() {
     this.name = "EchoBot";
-  };
-
-  EchoBot.prototype.onMessage = function(message, responder){
-    responder(message.text)
   }
 
-  return new EchoBot();
+  onMessage(message, responder) {
+    responder(message.text)
+  }
 }

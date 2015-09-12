@@ -1,49 +1,40 @@
-module.exports = function(){
+import { extend, sample, map } from 'lodash';
+import { get } from "request";
 
-  var _        = require('lodash'),
-      request  = require('request');
-
-  var GiphyBot = function(){
+export default class GiphyBot {
+  constructor() {
+    this.name = "GiphyBot";
     this.apiCallUrl = "http://api.giphy.com/v1/gifs/search"
     this.qs = {
       api_key: process.env.GIPHY_KEY,
-      limnit: 10,
+      limit: 50,
       offset: 0
     }
+  }
 
-  };
-
-  GiphyBot.prototype.testMessage = function(message){
+  testMessage(message){
     return /^[\w\-]+\.gif$/.test(message)
   }
 
-  GiphyBot.prototype.getImageName = function(message){
-    return message.substr(0, message.length-4).replace(/[-_+\s]+/g," ").trim()
+  getImageName(message){
+    return message.substr(0, message.length-4).replace(/[-_+\s]+/g, " ").trim()
   }
 
-  GiphyBot.prototype.perfomRequest = function(query, cb){
-    var qs = _.extend({q: query}, this.qs)
-    request({json: true, url: this.apiCallUrl, qs: qs}, function(error, response, body){
-        if(body){
-          cb(body)
-        }
-      }
-    )
+  perfomRequest(query, cb){
+    if (!query) return
+
+    var qs = extend({q: query}, this.qs)
+    var params = {json: true, url: this.apiCallUrl, qs: qs}
+    get(params, (_e, _r, body) => body && cb(body))
   }
 
-  GiphyBot.prototype.onMessage = function(message, responder){
-    if (!this.testMessage(message.text)) { return }
+  onMessage(message, responder){
+    var query = this.testMessage(message.text) && this.getImageName(message.text)
 
-    var query = this.getImageName(message.text)
-
-    this.perfomRequest(query, function(body){
-      if(!body.data[0]) { return }
-
-      var photo = _.sample(body.data)
-      console.log("" + query + ": ", photo)
-      responder("" + query + ": " + photo.url)
+    this.perfomRequest(query, body => {
+      var options = map(body.data, photo => photo.url)
+      if (!options[0]) return
+      responder(`${query}: ${sample(options)}`)
     })
   }
-
-  return new GiphyBot();
 }
