@@ -68,8 +68,9 @@ let onMessageBots = function (messageInfo) {
 
 let streamToBots = function(messageInfo){
   console.log('streamToBots');
-  tickBots(messageInfo)
-  onMessageBots(messageInfo)
+  // tickBots(messageInfo);
+  // onMessageBots(messageInfo);
+  app.botPipeline.onMessage(messageInfo);
 };
 
 app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token);

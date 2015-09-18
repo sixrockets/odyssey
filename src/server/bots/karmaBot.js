@@ -65,9 +65,9 @@ class KarmaBot {
   };
 
 
-  _tryAction(messageInfo, cb){
+  _tryAction(slackMessage, cb){
 
-    let parsedInfo = this.messageParser.parseMessage(messageInfo),
+    let parsedInfo = this.messageParser.call(slackMessage),
         action = parsedInfo.action;
 
     if (action !== undefined ){

@@ -1,15 +1,16 @@
 "use strict";
 
-let BaseParser = require('../baseParser'),
-    _          = require('lodash');
+let _ = require('lodash');
 
-class KarmaBotParser extends BaseParser{
 
-  parseMessage(messageData){
+class KarmaBotParser{
+
+  call(slackMessage){
     console.log('parsing');
-    let parsedMessage = super.parseMessage(messageData),
-        action = undefined,
+
+    let action = undefined,
         userName = "",
+        parsedMessage = slackMessage.parsedMessage,
         message = parsedMessage.message.replace("@","").replace("<","").replace(">","");
 
     // Cutre parse v1
@@ -24,8 +25,7 @@ class KarmaBotParser extends BaseParser{
     if(action !== undefined && action != "karmaList"){
       userName = message.replace("++", "").replace("--", "");
     }
-
-    return _.extend( parsedMessage, {action: action, mentionedUserName: userName} );
+    return _.clone(  slackMessage.newFromThis( parsedMessage, {action: action, mentionedUserName: userName}) );
   }
 }
 
