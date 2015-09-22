@@ -1,5 +1,7 @@
 "use strict";
 
+let _ = require('lodash');
+
 class InfoTransformer{
 
   constructor(){

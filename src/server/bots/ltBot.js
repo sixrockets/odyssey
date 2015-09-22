@@ -2,9 +2,10 @@ import lodash, { reduceRight } from "lodash";
 import { post } from 'request';
 import { parseString } from 'xml2js';
 
-export default class LTBot {
-  constructor() {
+class LTBot {
+  constructor(responder) {
     this.name = "LTBot";
+    this.responder = responder
   }
 
   replacer(result, other) {
@@ -14,7 +15,8 @@ export default class LTBot {
       other.errorlength, result.length);
   }
 
-  onMessage (message, responder){
+  onMessage (slackMessage){
+    let message = slackMessage.parsedMessage;
     post({ url: 'https://languagetool.org:8081', form: { 'language': 'es', 'text': message.text } },
       (error, response, body) => {
         parseString(body, (err, result) => {
@@ -31,8 +33,12 @@ export default class LTBot {
             value()
 
           if (result.length > 0)
-            responder(reduceRight(result, this.replacer, message.text) + "*");
+            this.responder(reduceRight(result, this.replacer, message.text) + "*");
         })
     });
   }
+}
+
+module.exports.new_bot = (app) => {
+  return new LTBot(app.slackClient);
 }

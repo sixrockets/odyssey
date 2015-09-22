@@ -1,10 +1,11 @@
 import { extend, sample, map } from 'lodash';
 import { get } from "request";
 
-export default class GiphyBot {
-  constructor() {
+class GiphyBot {
+  constructor(responder) {
     this.name = "GiphyBot";
-    this.apiCallUrl = "http://api.giphy.com/v1/gifs/search"
+    this.apiCallUrl = "http://api.giphy.com/v1/gifs/search";
+    this.responder = responder;
     this.qs = {
       api_key: process.env.GIPHY_KEY,
       limit: 50,
@@ -28,13 +29,14 @@ export default class GiphyBot {
     get(params, (_e, _r, body) => body && cb(body))
   }
 
-  onMessage(message, responder){
-    var query = this.testMessage(message.text) && this.getImageName(message.text)
+  onMessage(slackMessage){
+    let message = slackMessage.parsedMessage;
+    var query = this.testMessage(message.text) && this.getImageName(message.text);
 
     this.perfomRequest(query, body => {
       var options = map(body.data, photo => photo.url)
       if (!options[0]) return
-      responder(`${query}: ${sample(options)}`)
+      this.responder.sendMessage(`${query}: ${sample(options)}`, message.channel)
     })
   }
 }

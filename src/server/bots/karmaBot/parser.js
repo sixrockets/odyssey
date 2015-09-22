@@ -7,11 +7,10 @@ class KarmaBotParser{
 
   call(slackMessage){
     console.log('parsing');
-
     let action = undefined,
         userName = "",
         parsedMessage = slackMessage.parsedMessage,
-        message = parsedMessage.message.replace("@","").replace("<","").replace(">","");
+        message = parsedMessage.text.replace("@","").replace("<","").replace(">","");
 
     // Cutre parse v1
     if ( message.match(/^\w+\+{2}$/) ){
@@ -25,7 +24,12 @@ class KarmaBotParser{
     if(action !== undefined && action != "karmaList"){
       userName = message.replace("++", "").replace("--", "");
     }
-    return _.clone(  slackMessage.newFromThis( parsedMessage, {action: action, mentionedUserName: userName}) );
+
+    console.log("action: " + action);
+
+    console.log( _.merge(parsedMessage, {action: action, mentionedUserName: userName}) );
+
+    return   slackMessage.newFromThis( _.merge(parsedMessage, {action: action, mentionedUserName: userName}) );
   }
 }
 

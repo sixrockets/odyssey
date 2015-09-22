@@ -31,9 +31,8 @@ class BotPipeline {
       .then( (slackMessage) => {
         console.log("bot pipeline here");
         console.log(slackMessage);
-
-        Qx.map(this.bots, function(bot){
-          bot.tick && bot.tick(slackMessage);
+        Qx.map(this.bots, (bot) => {
+          bot.onMessage && bot.onMessage(slackMessage);
         });
 
       } )

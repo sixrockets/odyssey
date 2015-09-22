@@ -43,7 +43,7 @@ class KarmaBot {
     console.log(channelId);
     this.redisClient.set('karmaBot:karmaList', '1', 'NX', 'EX', 10)
     let query = this.slackUsers.model().find().sort( [['karma', 'descending']] ).limit(5);
-    query.exec(function(err, users){
+    query.exec((err, users) => {
       var index = 1;
       var messages = _.map(users, function(user){
         var str = "";
@@ -67,8 +67,10 @@ class KarmaBot {
 
   _tryAction(slackMessage, cb){
 
-    let parsedInfo = this.messageParser.call(slackMessage),
+    let parsedInfo = this.messageParser.call(slackMessage).parsedMessage,
         action = parsedInfo.action;
+    console.log('parsedInfo:');
+    console.log(parsedInfo);
 
     if (action !== undefined ){
       this.canPerformAction(parsedInfo).done( function(notCanPerform){
@@ -90,9 +92,9 @@ class KarmaBot {
     }
   };
 
-  tick(message){
+  onMessage(slackMessage){
     console.log('karmabot ticked');
-    this._tryAction(message, function(){
+    this._tryAction(slackMessage, function(){
       console.log('try action callback');
     });
   };

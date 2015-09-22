@@ -1,10 +1,11 @@
 import { extend, sample, map } from 'lodash';
 import { get } from "request";
 
-export default class FlickrBot {
-  constructor() {
+class FlickrBot {
+  constructor(responder) {
     this.name = "FlickrBot";
-    this.apiCallUrl = "https://api.flickr.com/services/rest/"
+    this.apiCallUrl = "https://api.flickr.com/services/rest/";
+    this.responder = responder;
     this.qs = {
       method: "flickr.photos.search",
       api_key: process.env.FLICKR_KEY,
@@ -35,13 +36,18 @@ export default class FlickrBot {
     get(params, (_e, _r, body) => body && cb(body))
   }
 
-  onMessage(message, responder){
+  onMessage(slackMessage){
+    var message = slackMessage.parsedMessage;
     var query = this.testMessage(message.text) && this.getImageName(message.text)
 
     this.perfomRequest(query, body => {
       var options = map(body.photos.photo, photo => photo.url_m)
       if (!options[0]) return
-      responder(`${query}: ${sample(options)}`)
+      this.responder.sendMessage(`${query}: ${sample(options)}`, message.channel)
     })
   }
+}
+
+module.exports.new_bot = (app) => {
+  return new FlickrBot(app.slackClient);
 }
