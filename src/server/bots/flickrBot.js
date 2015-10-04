@@ -1,6 +1,3 @@
-import { extend, sample, map } from 'lodash';
-import { get } from "request";
-
 export default class FlickrBot {
   constructor() {
     this.name = "FlickrBot";
@@ -19,25 +16,18 @@ export default class FlickrBot {
     }
   }
 
-  perfomRequest(query, cb){
-    if (!query) return
-
-    var qs = extend({text: query}, this.qs)
-    var params = {json: true, url: this.apiCallUrl, qs: qs}
-    get(params, (_e, _r, body) => body && cb(body))
-  }
-
-  onMessage(message){
-    message.hear(/^([\w\-]+)\.jpg$/, (match) => {
+  onMessage(msg){
+    msg.hear(/^([\w\-]+)\.jpg$/, (match) => {
       var query = match[1].replace(/[-_+\s]+/g, " ").trim()
-
-      this.perfomRequest(query, body => {
-        var options = map(body.photos.photo, photo => photo.url_m)
-        if (!options[0]) return
-        message.send(`${query}: ${sample(options)}`)
+      if (!query) return;
+      var qs = msg.extend({text: query}, this.qs)
+      var params = {json: true, url: this.apiCallUrl, qs: qs}
+      msg.http.get(params, (_e, _r, body) => {
+        if (!body) return;
+        var options = msg.map(body.photos.photo, photo => photo.url_m)
+        if (!options[0]) return;
+        msg.send(`${query}: ${msg.sample(options)}`)
       })
-
     })
-
   }
 }
