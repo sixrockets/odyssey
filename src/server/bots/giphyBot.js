@@ -28,13 +28,13 @@ export default class GiphyBot {
     get(params, (_e, _r, body) => body && cb(body))
   }
 
-  onMessage(message, responder){
+  onMessage(message){
     var query = this.testMessage(message.text) && this.getImageName(message.text)
 
     this.perfomRequest(query, body => {
       var options = map(body.data, photo => photo.url)
       if (!options[0]) return
-      responder(`${query}: ${sample(options)}`)
+      message.send(`${query}: ${sample(options)}`)
     })
   }
 }

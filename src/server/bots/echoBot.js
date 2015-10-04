@@ -3,7 +3,7 @@ export default class EchoBot {
     this.name = "EchoBot";
   }
 
-  onMessage(message, responder) {
-    responder(message.text)
+  onMessage(message) {
+    message.send(message.text)
   }
 }
