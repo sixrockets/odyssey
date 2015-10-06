@@ -1,6 +1,3 @@
-
-
-
 <!--
 websocketd console
 
@@ -163,6 +160,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </section>
 
 <script>
+  // autolink
+  var autoLink = function(str) {
+      var __slice = [].slice;
+      var k, linkAttributes, option, options, pattern, v;
+      options = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+
+      pattern = /(^|[\s\n]|<br\/?>)((?:https?|ftp):\/\/[\-A-Z0-9+\u0026\u2019@#\/%?=()~_|!:,.;]*[\-A-Z0-9+\u0026@#\/%=~()_|])/gi;
+      if (!(options.length > 0)) {
+        return str.replace(pattern, "$1<a href='$2'>$2</a>");
+      }
+      option = options[0];
+      linkAttributes = ((function() {
+        var _results;
+        _results = [];
+        for (k in option) {
+          v = option[k];
+          if (k !== 'callback') {
+            _results.push(" " + k + "='" + v + "'");
+          }
+        }
+        return _results;
+      })()).join('');
+      return str.replace(pattern, function(match, space, url) {
+        var link;
+        link = (typeof option.callback === "function" ? option.callback(url) : void 0) || ("<a href='" + url + "'" + linkAttributes + ">" + url + "</a>");
+        return "" + space + link;
+      });
+  };
 
   var ws = null;
 
@@ -233,7 +258,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     el.classList.remove('template');
     el.classList.add('type-' + type.toLowerCase());
     el.querySelector('.message-type').textContent = type;
-    el.querySelector('.message-data').textContent = data || '';
+    el.querySelector('.message-data').innerHTML = autoLink(data || '');
     el.querySelector('.message-data').innerHTML += '&nbsp;';
     el.scrollIntoView(true);
   }

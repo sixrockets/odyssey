@@ -1,5 +1,4 @@
 import lodash, { reduceRight } from "lodash";
-import { post } from 'request';
 import { parseString } from 'xml2js';
 
 export default class LTBot {
@@ -15,10 +14,13 @@ export default class LTBot {
   }
 
   onMessage (message){
-    post({ url: 'https://languagetool.org:8081', form: { 'language': 'es', 'text': message.text } },
-      (error, response, body) => {
+    let params = {
+      url: 'https://languagetool.org:8081',
+      form: { 'language': 'es', 'text': message.text }
+    }
+    message.http.post(params, (_e, _r, body) => {
         parseString(body, (err, result) => {
-          if(!result) return
+          if(!result) return;
 
           result = lodash(result.matches.error).
             map(obj => ({

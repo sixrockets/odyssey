@@ -1,36 +1,63 @@
-var request = require('request-promise');
+var rp = require('request-promise');
 var _ = require('lodash');
 
 module.exports = function(app, onEvent){
-  let offset = 0;
+  class TelegramAdapter {
+    constructor() {
+      this.offset = 0;
+    }
 
-  let fillMessage  = function(message){
-    return _.extend({device: 'telegram', driver: {}, type: 'message'}, message)
+    url(action, file){
+      return file
+        ? `https://api.telegram.org/file/bot${app.config.telegram_api.token}/${file}`
+        : `https://api.telegram.org/bot${app.config.telegram_api.token}/${action}`
+    }
+
+    command(action){
+      return qs =>
+        action == 'file'
+          ? rp(this.url(action, qs))
+          : rp({ url: this.url(action), qs: qs })
+    }
+
+    send(channel, text){
+      let sender = text => this.command('sendMessage')({ chat_id: channel.id, text: text })
+      return text ? sender(text) : sender
+    }
+
+    sendLocation(channel, location){
+      let sender = location => this.command('sendLocation')({ chat_id: channel.id, latitude: location.lat, longitude: location.lon })
+      return location ? sender(location) : sender
+    }
+
   }
 
-  let call = action => function (qs) {
-    let url = `https://api.telegram.org/bot${app.config.telegram_api.token}/${action}`
-    return request({ url: url, qs: qs })
-  }
+  let client = new TelegramAdapter();
 
-  let sendMessage = channel => text => call('sendMessage')({ chat_id: channel, text: text })
+  let fillMessage = message => {
+    return _.extend({
+      device: 'telegram',
+      driver: client,
+      type: 'message',
+      sendLocation: client.sendLocation(message.chat)
+    }, message)
+  }
 
   let max = (arr, cb) => _.max(_.map(arr, cb))
 
-  let updateOffset = function(result){
-    if (result[0]) offset = max(result, update => update.update_id)
+  let updateOffset = result => {
+    if (result[0]) client.offset = max(result, update => update.update_id)
   }
 
-  let tick = function(){
-    call('getUpdates')({offset: offset + 1})
-      .then(function(message){
+  let tick = () => {
+    client.command('getUpdates')({offset: client.offset + 1})
+      .then(message => {
         message = JSON.parse(message)
 
         updateOffset(message.result)
 
-        _.map(message.result, function(update){
-          let payload = _.extend({device: 'telegram', driver: {}, type: 'message'}, update.message)
-          onEvent(payload, sendMessage(update.message.chat.id))
+        _.map(message.result, update => {
+          onEvent(fillMessage(update.message), client.send(update.message.chat))
         })
 
       })
@@ -38,4 +65,6 @@ module.exports = function(app, onEvent){
   }
 
   setInterval(tick, 1000)
+
+  return client
 }

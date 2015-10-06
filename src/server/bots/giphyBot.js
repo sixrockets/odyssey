@@ -1,6 +1,3 @@
-import { extend, sample, map } from 'lodash';
-import { get } from "request";
-
 export default class GiphyBot {
   constructor() {
     this.name = "GiphyBot";
@@ -12,29 +9,18 @@ export default class GiphyBot {
     }
   }
 
-  testMessage(message){
-    return /^[\w\-]+\.gif$/.test(message)
-  }
-
-  getImageName(message){
-    return message.substr(0, message.length-4).replace(/[-_+\s]+/g, " ").trim()
-  }
-
-  perfomRequest(query, cb){
-    if (!query) return
-
-    var qs = extend({q: query}, this.qs)
-    var params = {json: true, url: this.apiCallUrl, qs: qs}
-    get(params, (_e, _r, body) => body && cb(body))
-  }
-
-  onMessage(message){
-    var query = this.testMessage(message.text) && this.getImageName(message.text)
-
-    this.perfomRequest(query, body => {
-      var options = map(body.data, photo => photo.url)
-      if (!options[0]) return
-      message.send(`${query}: ${sample(options)}`)
+  onMessage(msg){
+    msg.hear(/^([\w\-]+)\.gif$/, (match) => {
+      var query = match[1].replace(/[-_+\s]+/g, " ").trim()
+      if (!query) return;
+      var qs = msg.extend({q: query}, this.qs)
+      var params = {json: true, url: this.apiCallUrl, qs: qs}
+      msg.http.get(params, (_e, _r, body) => {
+        if (!body) return;
+        var options = msg.map(body.data, photo => photo.url)
+        if (!options[0]) return;
+        msg.send(`${query}: ${msg.sample(options)}`)
+      })
     })
   }
 }

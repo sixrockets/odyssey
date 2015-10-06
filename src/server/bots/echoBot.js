@@ -4,6 +4,7 @@ export default class EchoBot {
   }
 
   onMessage(message) {
-    message.send(message.text)
+    message.command("echo", match => message.send(match[0]))
+    // message.send(message.text)
   }
 }

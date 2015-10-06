@@ -32,6 +32,20 @@ let hear = function (regexp, cb) {
   if (result = regexp.exec(this.text)) cb(result)
 }
 
+let command = function (command, regexp, cb) {
+  var result;
+  if (cb == void 0){
+    cb = regexp;
+    regexp = /.*/;
+  }
+
+  var command_regexp = new RegExp(`^[/@#]${command}\\s*(.*)$`, "i");
+
+  if (result = command_regexp.exec(this.text))
+    if (result = regexp.exec(result[1]))
+      cb(result);
+}
+
 let callAll = function(prop){
   let args = Array.prototype.slice.call(arguments, 1)
   app.modules.Qx.map(app.bots, function(bot){
@@ -39,6 +53,7 @@ let callAll = function(prop){
       if(bot[prop]) bot[prop].apply(bot, args);
     } catch (err) {
       console.log(err)
+      console.log(err.stack)
     }
   });
 }
@@ -46,10 +61,14 @@ let callAll = function(prop){
 let onEvent = function(event, responder){
     event.send = responder
     event.hear = hear.bind(event)
+    event.command = command.bind(event)
     event.extend = extend
     event.sample = sample
     event.map = map
     event.http = rp
+    event.sendLocation = event.sendLocation || function(location){
+      event.send(`https://www.google.com/maps/search/${location.lat},${location.lon}`)
+    }
 
     callAll('onEvent', event)
 
