@@ -84,7 +84,7 @@ KarmaBot.prototype._tryAction = function(messageInfo, cb){
   }
 };
 
-KarmaBot.prototype.tick = function(message){
+KarmaBot.prototype.onEvent = function(message){
   console.log('karmabot ticked');
   this._tryAction(message, function(){
     console.log('try action callback');

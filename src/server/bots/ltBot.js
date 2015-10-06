@@ -14,7 +14,7 @@ export default class LTBot {
       other.errorlength, result.length);
   }
 
-  onMessage (message, responder){
+  onMessage (message){
     post({ url: 'https://languagetool.org:8081', form: { 'language': 'es', 'text': message.text } },
       (error, response, body) => {
         parseString(body, (err, result) => {
@@ -31,7 +31,7 @@ export default class LTBot {
             value()
 
           if (result.length > 0)
-            responder(reduceRight(result, this.replacer, message.text) + "*");
+            message.send(reduceRight(result, this.replacer, message.text) + "*");
         })
     });
   }

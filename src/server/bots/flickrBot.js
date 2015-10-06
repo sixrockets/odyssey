@@ -19,14 +19,6 @@ export default class FlickrBot {
     }
   }
 
-  testMessage(message){
-    return /^[\w\-]+\.jpg$/.test(message)
-  }
-
-  getImageName(message){
-    return message.substr(0, message.length-4).replace(/[-_+\s]+/g, " ").trim()
-  }
-
   perfomRequest(query, cb){
     if (!query) return
 
@@ -35,13 +27,17 @@ export default class FlickrBot {
     get(params, (_e, _r, body) => body && cb(body))
   }
 
-  onMessage(message, responder){
-    var query = this.testMessage(message.text) && this.getImageName(message.text)
+  onMessage(message){
+    message.hear(/^([\w\-]+)\.jpg$/, (match) => {
+      var query = match[1].replace(/[-_+\s]+/g, " ").trim()
 
-    this.perfomRequest(query, body => {
-      var options = map(body.photos.photo, photo => photo.url_m)
-      if (!options[0]) return
-      responder(`${query}: ${sample(options)}`)
+      this.perfomRequest(query, body => {
+        var options = map(body.photos.photo, photo => photo.url_m)
+        if (!options[0]) return
+        message.send(`${query}: ${sample(options)}`)
+      })
+
     })
+
   }
 }
