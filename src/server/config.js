@@ -36,6 +36,9 @@ module.exports = function(){
                 mongodb: {url: 'mongodb://localhost/rr_bot'},
                 slack_api: {
                   token: process.env.BOT_API_TOKEN
+                },
+                telegram_api: {
+                  token: process.env.TELEGRAM_BOT_TOKEN
                 }
               };
       }

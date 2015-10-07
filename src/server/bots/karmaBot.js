@@ -99,7 +99,9 @@ class KarmaBot {
     });
   };
 
-}
-module.exports.new_bot = function(app){
-  return new KarmaBot(app.redisClient, app.slackUsers, app.slackClient);
-}
+KarmaBot.prototype.onEvent = function(message){
+  console.log('karmabot ticked');
+  this._tryAction(message, function(){
+    console.log('try action callback');
+  });
+};

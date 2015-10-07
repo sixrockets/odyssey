@@ -29,14 +29,13 @@ class GiphyBot {
     get(params, (_e, _r, body) => body && cb(body))
   }
 
-  onMessage(slackMessage){
-    let message = slackMessage.parsedMessage;
-    var query = this.testMessage(message.text) && this.getImageName(message.text);
+  onMessage(message){
+    var query = this.testMessage(message.text) && this.getImageName(message.text)
 
     this.perfomRequest(query, body => {
       var options = map(body.data, photo => photo.url)
       if (!options[0]) return
-      this.responder.sendMessage(`${query}: ${sample(options)}`, message.channel)
+      message.send(`${query}: ${sample(options)}`)
     })
   }
 }

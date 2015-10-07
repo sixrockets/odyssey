@@ -4,9 +4,8 @@ class EchoBot {
     this.name = "EchoBot";
   }
 
-  onMessage(slackMessage) {
-    let message = slackMessage.parsedMessage;
-    this.responder.sendMessage(message.text, message.channel);
+  onMessage(message) {
+    message.send(message.text)
   }
 }
 

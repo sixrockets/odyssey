@@ -15,8 +15,7 @@ class LTBot {
       other.errorlength, result.length);
   }
 
-  onMessage (slackMessage){
-    let message = slackMessage.parsedMessage;
+  onMessage (message){
     post({ url: 'https://languagetool.org:8081', form: { 'language': 'es', 'text': message.text } },
       (error, response, body) => {
         parseString(body, (err, result) => {
@@ -33,7 +32,7 @@ class LTBot {
             value()
 
           if (result.length > 0)
-            this.responder(reduceRight(result, this.replacer, message.text) + "*");
+            message.send(reduceRight(result, this.replacer, message.text) + "*");
         })
     });
   }
