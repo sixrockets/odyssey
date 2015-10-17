@@ -2,6 +2,8 @@ var _ = require('lodash');
 
 module.exports = function(app, onEvent){
   var driver = {};
+  driver.users = app.slackUsers = require('./slackUsers')(app);
+  driver.client = app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token);
 
   var fillMessage  = function(message){
     return _.extend({ device: 'slack', driver: driver }, message)
@@ -14,14 +16,11 @@ module.exports = function(app, onEvent){
   }
 
   var onMessageReceived = function (messageInfo) {
-      var message = JSON.parse(messageInfo);
-
-      onEvent(fillMessage(message), responder(message.channel))
+    var message = JSON.parse(messageInfo);
+    console.log('slack message received');
+    console.log(message);
+    onEvent(fillMessage(message), responder(message.channel))
   };
-
-  driver.users = app.slackUsers = require('./slackUsers')(app);
-
-  driver.client = app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token);
 
   app.slackClient.on('connectionOpen', function(){
     app.slackUsers.saveUsers();
