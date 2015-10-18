@@ -1,29 +1,25 @@
-var _ = require('lodash');
+module.exports = (app, onEvent) => {
+  const driver = {}
+  driver.users = app.slackUsers = require("./slackUsers")(app)
+  driver.client = app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token)
 
-module.exports = function(app, onEvent){
-  var driver = {};
-  driver.users = app.slackUsers = require('./slackUsers')(app);
-  driver.client = app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token);
-
-  var fillMessage  = function(message){
-    return _.extend({ device: 'slack', driver: driver }, message)
+  const fillMessage = message => {
+    return { device: "slack", driver, ...message }
   }
 
-  var responder = function(channel){
-    return function (text) {
-      app.slackClient.sendMessage(text, channel);
-    };
+  const responder = channel => text => {
+    app.slackClient.sendMessage(text, channel)
   }
 
-  var onMessageReceived = function (messageInfo) {
-    var message = JSON.parse(messageInfo);
+  const onMessageReceived = messageInfo => {
+    const message = JSON.parse(messageInfo)
     onEvent(fillMessage(message), responder(message.channel))
-  };
+  }
 
-  app.slackClient.on('connectionOpen', function(){
-    app.slackUsers.saveUsers();
-  });
-  app.slackClient.on('messageReceived', onMessageReceived);
+  app.slackClient.on("connectionOpen", () => {
+    app.slackUsers.saveUsers()
+  })
+  app.slackClient.on("messageReceived", onMessageReceived)
 
-  app.slackClient.startSocketConnection();
+  app.slackClient.startSocketConnection()
 }

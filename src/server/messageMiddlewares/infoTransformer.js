@@ -1,17 +1,9 @@
-"use strict";
-
-let _ = require('lodash');
-
-class InfoTransformer{
-
-  constructor(){
-  }
-
-  call( slackMessage){
-    let parsedMessage = slackMessage.parsedMessage;
-    let newParsedMessage = _.merge(parsedMessage, {userId: parsedMessage.user})
-    return slackMessage.newFromThis( newParsedMessage );
+class InfoTransformer {
+  call( slackMessage) {
+    const parsedMessage = slackMessage.parsedMessage
+    const newParsedMessage = {...parsedMessage, userId: parsedMessage.user}
+    return slackMessage.newFromThis( newParsedMessage )
   }
 }
 
-module.exports = new InfoTransformer();
+module.exports = new InfoTransformer()
