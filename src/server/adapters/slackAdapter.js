@@ -17,8 +17,6 @@ module.exports = function(app, onEvent){
 
   var onMessageReceived = function (messageInfo) {
     var message = JSON.parse(messageInfo);
-    console.log('slack message received');
-    console.log(message);
     onEvent(fillMessage(message), responder(message.channel))
   };
 
