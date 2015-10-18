@@ -68,8 +68,7 @@ module.exports = function(app){
   });
 
 
-  var server = webServer.listen(app.config.port, function() {
-    app.modules.mongoose.connect(app.config.mongodb.url);
+  var server = webServer.listen(app.config.port, function() {    
     console.log('Listening on port %d', server.address().port);
   });
 

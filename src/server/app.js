@@ -3,9 +3,6 @@
 let path = require('path'),
     config = require('./config');
 
-
-
-
 var serverPath = function(route){
   return path.join(__dirname, route);
 }

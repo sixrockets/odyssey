@@ -12,13 +12,8 @@ module.exports = (app) => {
 
   let callAll = function(prop){
     let args = Array.prototype.slice.call(arguments, 1)
-    console.log(prop);
-    console.log(app.bots);
     app.modules.Qx.map(app.bots, function(bot){
-      console.log(bot);
       try {
-        console.log('on try');
-        console.log( bot[prop] )
         if(bot[prop]) bot[prop].apply(bot, args);
       } catch (err) {
         console.log(err)
@@ -37,7 +32,6 @@ module.exports = (app) => {
       callAll('onEvent', event)
 
       if (event.type == "message") {
-        console.log('calling callAll');
         callAll('onMessage', event);
       }
   }
