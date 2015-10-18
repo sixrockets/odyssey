@@ -4,12 +4,12 @@ import { updateUsers } from '../shared/actions';
 
 // console.log(rrBotApp);
 
-let store = createStore(rrBotApp);
+const store = createStore(rrBotApp);
 
 // console.log(store.getState());
 
 // Every time the state changes, log it
-let unsubscribe = store.subscribe(() =>
+const unsubscribe = store.subscribe(() =>
   console.log(store.getState())
 );
 
