@@ -1,40 +1,36 @@
-var request = require('request-promise');
-var _ = require('lodash');
+import request from "request-promise"
+import { max } from "lodash"
 
-module.exports = function(app, onEvent){
-  let offset = 0;
+module.exports = (app, onEvent) => {
+  let offset = 0
 
-  let fillMessage  = function(message){
-    return _.extend({device: 'telegram', driver: {}, type: 'message'}, message)
+  const fillMessage = message => {
+    return {device: "telegram", driver: {}, type: "message", ...message}
   }
 
-  let call = action => function (qs) {
-    let url = `https://api.telegram.org/bot${app.config.telegram_api.token}/${action}`
+  const call = action => qs => {
+    const url = `https://api.telegram.org/bot${app.config.telegram_api.token}/${action}`
     return request({ url: url, qs: qs })
   }
 
-  let sendMessage = channel => text => call('sendMessage')({ chat_id: channel, text: text })
+  const sendMessage = channel => text => call("sendMessage")({ chat_id: channel, text: text })
 
-  let max = (arr, cb) => _.max(_.map(arr, cb))
-
-  let updateOffset = function(result){
-    if (result[0]) offset = max(result, update => update.update_id)
+  const updateOffset = result => {
+    if (result[0]) offset = max(result.map(update => update.update_id))
   }
 
-  let tick = function(){
-    call('getUpdates')({offset: offset + 1})
-      .then(function(message){
-        message = JSON.parse(message)
-
+  const tick = () => {
+    call("getUpdates")({offset: offset + 1})
+      .then(message => JSON.parse(message))
+      .then(message => {
         updateOffset(message.result)
 
-        _.map(message.result, function(update){
-          let payload = _.extend({device: 'telegram', driver: {}, type: 'message'}, update.message)
+        message.result.map(update => {
+          const payload = {device: "telegram", driver: {}, type: "message", ...update.message}
           onEvent(payload, sendMessage(update.message.chat.id))
         })
-
       })
-      .catch(console.error);
+      .catch(console.error)
   }
 
   setInterval(tick, 1000)

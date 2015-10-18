@@ -1,7 +1,7 @@
-module.exports = (app) => {
+module.exports = (_app) => {
   class EchoBot {
     constructor() {
-      this.name = "EchoBot";
+      this.name = "EchoBot"
     }
 
     onMessage(message) {
@@ -9,5 +9,5 @@ module.exports = (app) => {
     }
   }
 
-  return EchoBot;
+  return EchoBot
 }

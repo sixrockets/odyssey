@@ -1,23 +1,21 @@
-module.exports = function(app){
+module.exports = app => {
+  const mongoose = app.modules.mongoose
 
-  var _ = app.modules._;
-  var mongoose = app.modules.mongoose;
+  const Schema = mongoose.Schema
 
-  var Schema = mongoose.Schema;
-
-  var privateGroupSchema = new Schema({
-    slackId:  String,
+  const privateGroupSchema = new Schema({
+    slackId: String,
     nombre: String,
     created: { type: Date, default: Date.now },
     creator: String,
     members: [String]
-  });
+  })
 
-  privateGroupSchema.index({slackId: 1});
+  privateGroupSchema.index({slackId: 1})
 
   // privateGroupSchema.set('autoIndex', false);
 
-  var PrivateGroup = mongoose.model('PrivateGroup', privateGroupSchema);
+  const PrivateGroup = mongoose.model("PrivateGroup", privateGroupSchema)
 
-  return PrivateGroup;
+  return PrivateGroup
 }

@@ -1,36 +1,33 @@
-"use strict";
+import { merge } from "lodash"
 
-let _ = require('lodash');
+class KarmaBotParser {
 
-
-class KarmaBotParser{
-
-  call(slackMessage){
-    console.log('parsing');
-    let action = undefined,
-        userName = "",
-        parsedMessage = slackMessage.parsedMessage,
-        message = parsedMessage.text.replace("@","").replace("<","").replace(">","");
+  call(slackMessage) {
+    console.log("parsing")
+    let action = undefined
+    let userName = ""
+    const parsedMessage = slackMessage.parsedMessage
+    const message = parsedMessage.text.replace("@", "").replace("<", "").replace(">", "")
 
     // Cutre parse v1
-    if ( message.match(/^\w+\+{2}$/) ){
-      action = "karmaPlus";
-    } else if ( message.match(/^\w+\-{2}$/) ){
-      action = "karmaMinus";
-    } else if ( message.match(/^karmaList$/) ){
-      action = "karmaList";
-    };
-
-    if(action !== undefined && action != "karmaList"){
-      userName = message.replace("++", "").replace("--", "");
+    if ( message.match(/^\w+\+{2}$/) ) {
+      action = "karmaPlus"
+    } else if ( message.match(/^\w+\-{2}$/) ) {
+      action = "karmaMinus"
+    } else if ( message.match(/^karmaList$/) ) {
+      action = "karmaList"
     }
 
-    console.log("action: " + action);
+    if (action !== undefined && action !== "karmaList") {
+      userName = message.replace("++", "").replace("--", "")
+    }
 
-    console.log( _.merge(parsedMessage, {action: action, mentionedUserName: userName}) );
+    console.log("action: " + action)
 
-    return   slackMessage.newFromThis( _.merge(parsedMessage, {action: action, mentionedUserName: userName}) );
+    console.log( merge(parsedMessage, {action: action, mentionedUserName: userName}) )
+
+    return slackMessage.newFromThis( merge(parsedMessage, {action: action, mentionedUserName: userName}) )
   }
 }
 
-module.exports = KarmaBotParser;
+module.exports = KarmaBotParser

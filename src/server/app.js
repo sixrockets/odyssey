@@ -1,20 +1,15 @@
-"use strict";
+const path = require("path")
+const config = require("./config")
 
-let path = require('path'),
-    config = require('./config');
+const serverPath = route => path.join(__dirname, route)
 
-var serverPath = function(route){
-  return path.join(__dirname, route);
-}
+const app = {}
 
-var app = {};
+app.config = config()
+require("./boot/index")(app)
 
-app.config = config();
-require('./boot/index')(app);
-
-app.serverPath = serverPath;
-
+app.serverPath = serverPath
 
 // app.webServer = require('./webServer')(app)
 
-module.exports = app;
+module.exports = app

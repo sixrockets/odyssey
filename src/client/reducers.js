@@ -1,17 +1,14 @@
-import { UPDATE_USERS } from '../shared/actions';
-import  _ from 'lodash';
-
-// console.log(_);
+import { UPDATE_USERS } from "../shared/actions"
 
 const initialState = {
   users: []
-};
+}
 
 exports.rrBotApp = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_USERS:
-      return _.assign( {}, state, { users: action.users });
+      return { ...state, users: action.users }
     default:
-      return state;
+      return state
   }
-};
+}

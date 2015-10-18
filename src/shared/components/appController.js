@@ -1,23 +1,22 @@
-import React from "react";
-import  UserList from "./userList";
+import React from "react"
+import UserList from "./userList"
 import store from "../../client/store"
 
+const AppController = React.createClass({
 
-let AppController = React.createClass({
-
-   getInitialState: function(){
-    return {users: [ {name: "test user"} ]};
+  getInitialState: function getInitialState() {
+    return {users: [ {name: "test user"} ]}
   },
 
-  render: function() {
+  render: function render() {
     return (
       <div>
         <p>Maggie controller here</p>
-        <UserList data={this.state.users}></UserList>
+        <UserList data={this.state.users} />
       </div>
     )
   }
 
-});
+})
 
-export default AppController;
+export default AppController

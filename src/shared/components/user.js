@@ -1,8 +1,8 @@
-import React from "react";
+import React from "react"
 
 export default class User extends React.Component {
 
-  render(){
+  render() {
     return (
       <li>
         {this.props.name}

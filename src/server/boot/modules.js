@@ -1,26 +1,16 @@
-"use strict";
-
 module.exports = (app) => {
+  // ? const logger = require('morgan');
+  // ? const redis = require('redis');
 
+  app.modules = {}
 
-  let logger = require('morgan'),
-      request = require('request'),
-      mongoose = require('mongoose'),
-      _ = require('lodash'),
-      async = require('async'),
-      Q = require('q'),
-      Qx = require('qx'),
-      AwesomeSlack = require('awesome_slack'),
-      redis = require('redis');
+  app.modules.mongoose = require("mongoose")
+  app.modules._ = require("lodash")
+  app.modules.async = require("async")
+  app.modules.Q = require("q")
+  app.modules.Qx = require("qx")
+  app.modules.request = require("request")
+  app.modules.AwesomeSlack = require("awesome_slack")
 
-  app.modules = {};
-  mongoose.set('debug', false);
-  app.modules.mongoose = mongoose;
-  app.modules._ = _;
-  app.modules.async = async;
-  app.modules.Q = Q;
-  app.modules.Qx = Qx;
-  app.modules.request = request;
-  app.modules.AwesomeSlack = AwesomeSlack;
-
+  app.modules.mongoose.set("debug", false)
 }
