@@ -1,7 +1,6 @@
 module.exports = (app) => {
   class EchoBot {
-    constructor(responder) {
-      this.responder = responder;
+    constructor() {
       this.name = "EchoBot";
     }
 
