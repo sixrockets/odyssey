@@ -5,7 +5,8 @@ module.exports = (_app) => {
     }
 
     onMessage(message) {
-      message.send(message.text)
+      message.command("echo", match => message.send(match[0]))
+      // message.send(message.text)
     }
   }
 
