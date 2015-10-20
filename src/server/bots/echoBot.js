@@ -1,4 +1,4 @@
-module.exports = (_app) => {
+export default (_app) =>
   class EchoBot {
     constructor() {
       this.name = "EchoBot"
@@ -9,6 +9,3 @@ module.exports = (_app) => {
       // message.send(message.text)
     }
   }
-
-  return EchoBot
-}
