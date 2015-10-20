@@ -1,13 +1,8 @@
-import { extend, sample, map } from "lodash"
-import { get } from "request"
-
-module.exports = (_app) => {
-
+export default (_app) =>
   class FlickrBot {
-    constructor(responder) {
+    constructor() {
       this.name = "FlickrBot"
       this.apiCallUrl = "https://api.flickr.com/services/rest/"
-      this.responder = responder
       this.qs = {
         method: "flickr.photos.search",
         api_key: process.env.FLICKR_KEY,
@@ -22,29 +17,18 @@ module.exports = (_app) => {
       }
     }
 
-    perfomRequest(query, cb) {
-      if (!query) return
-
-      const qs = extend({text: query}, this.qs)
-      const params = {json: true, url: this.apiCallUrl, qs: qs}
-      get(params, (_e, _r, body) => body && cb(body))
-    }
-
-    onMessage(message) {
-
-      if ( typeof this.qs.api_key !== "undefined") {
-        message.hear(/^([\w\-]+)\.jpg$/, (match) => {
-          const query = match[1].replace(/[-_+\s]+/g, " ").trim()
-          this.perfomRequest(query, body => {
-            const options = map(body.photos.photo, photo => photo.url_m)
-            if (!options[0]) return
-            message.send(`${query}: ${sample(options)}`)
-          })
+    onMessage(msg) {
+      msg.hear(/^([\w\-]+)\.jpg$/, (match) => {
+        const query = match[1].replace(/[-_+\s]+/g, " ").trim()
+        if (!query) return
+        const qs = msg.extend({text: query}, this.qs)
+        const params = {json: true, url: this.apiCallUrl, qs: qs}
+        msg.http.get(params, (_e, _r, body) => {
+          if (!body) return
+          const options = msg.map(body.photos.photo, photo => photo.url_m)
+          if (!options[0]) return
+          msg.send(`${query}: ${msg.sample(options)}`)
         })
-      }
-
+      })
     }
   }
-
-  return FlickrBot
-}
