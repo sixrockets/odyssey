@@ -1,7 +1,7 @@
 import rp from "request-promise"
 import { max } from "lodash"
 
-module.exports = (app, onEvent) => {
+export default (app, onEvent) => {
   class TelegramAdapter {
     constructor() {
       this.offset = 0
@@ -14,20 +14,27 @@ module.exports = (app, onEvent) => {
     }
 
     command(action) {
-      return qs =>
-        action === "file"
-          ? rp(this.url(action, qs))
-          : rp({ url: this.url(action), qs: qs })
+      return qs => rp(action === "file"
+        ? this.url(action, qs)
+        : { url: this.url(action), qs: qs })
     }
 
-    send(channel, text_) {
-      const sender = text => this.command("sendMessage")({ chat_id: channel.id, text })
+    send({id}, text_) {
+      const sender = text => this.command("sendMessage")({ chat_id: id, text })
       return text_ ? sender(text_) : sender
     }
 
-    sendLocation(channel, location_) {
-      const sender = location => this.command("sendLocation")({ chat_id: channel.id, latitude: location.lat, longitude: location.lon })
-      return location_ ? sender(location_) : sender
+    sendLocation({id}, location) {
+      const sender = ({lat, lon}) => this._sendLocation({ chat_id: id, latitude: lat, longitude: lon })
+      return location ? sender(location) : sender
+    }
+
+    get _sendLocation() {
+      return this.command("sendLocation")
+    }
+
+    get _getUpdates() {
+      return this.command("getUpdates")
     }
 
   }
@@ -48,18 +55,18 @@ module.exports = (app, onEvent) => {
     if (result[0]) client.offset = max(result.map(update => update.update_id))
   }
 
-  const tick = () => {
-    client.command("getUpdates")({offset: client.offset + 1})
-      .then(message => JSON.parse(message))
-      .then(message => {
-        updateOffset(message.result)
+  const tick = async () => {
+    try {
+      const response = await (client._getUpdates({offset: client.offset + 1}))
+      const {result} = JSON.parse(response)
+      updateOffset(result)
 
-        message.result.map(update =>
-          onEvent(fillMessage(update.message), client.send(update.message.chat))
-        )
-
-      })
-      .catch(console.error)
+      result.map(({message}) =>
+        onEvent(fillMessage(message), client.send(message.chat))
+      )
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   setInterval(tick, 1000)

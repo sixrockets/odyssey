@@ -18,17 +18,16 @@ export default (_app) =>
     }
 
     onMessage(msg) {
-      msg.hear(/^([\w\-]+)\.jpg$/, (match) => {
+      msg.hear(/^([\w\-]+)\.jpg$/, async match => {
         const query = match[1].replace(/[-_+\s]+/g, " ").trim()
         if (!query) return
-        const qs = msg.extend({text: query}, this.qs)
-        const params = {json: true, url: this.apiCallUrl, qs: qs}
-        msg.http.get(params, (_e, _r, body) => {
-          if (!body) return
-          const options = msg.map(body.photos.photo, photo => photo.url_m)
-          if (!options[0]) return
-          msg.send(`${query}: ${msg.sample(options)}`)
+        const {body} = await msg.http.get({
+          json: true, url: this.apiCallUrl, qs: { ...this.qs, text: query }
         })
+        if (!body) return
+        const options = body.photos.photo.map(photo => photo.url_m)
+        if (!options[0]) return
+        msg.send(`${query}: ${msg.sample(options)}`)
       })
     }
   }

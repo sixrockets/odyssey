@@ -17,7 +17,7 @@ function toLatLon(location) {
   }
 }
 
-function weather(msg, location, cb) {
+async function weather(msg, location, cb) {
   const params = {
     uri: "http://api.openweathermap.org/data/2.5/weather",
     qs: {
@@ -29,14 +29,13 @@ function weather(msg, location, cb) {
     json: true
   }
 
-  msg.http.get(params).then(res => {
-    console.dir(res)
-    const emoji = emojis[res.body.weather[0].icon.slice(0, 2)]
-    const temp = `${emoji} ${res.body.main.temp}\u00b0`
-    const humidty = `\ud83d\udca6 ${res.body.main.humidity}%`
-    const wind = `\ud83d\udca8 ${res.body.wind.speed} m/s`
-    cb(`${temp} ${humidty} ${wind}`)
-  })
+  const res = await msg.http.get(params)
+  console.dir(res)
+  const emoji = emojis[res.body.weather[0].icon.slice(0, 2)]
+  const temp = `${emoji} ${res.body.main.temp}\u00b0`
+  const humidty = `\ud83d\udca6 ${res.body.main.humidity}%`
+  const wind = `\ud83d\udca8 ${res.body.wind.speed} m/s`
+  cb(`${temp} ${humidty} ${wind}`)
 }
 
 export default (_app) =>
@@ -55,26 +54,24 @@ export default (_app) =>
         msg.send(msg.sample(["Holii!!", "Holi", "Holi", "Morning!"]))
       })
 
-      msg.command("cat", _match => {
-        const caturl = "http://thecatapi.com/api/images/get?format=src"
-        msg.http.get(caturl).then( res => msg.send(res.headers.location) )
+      msg.command("cat", async _match => {
+        const {headers} = await msg.http.get("http://thecatapi.com/api/images/get?format=src")
+        msg.send(headers.location)
       })
 
-      msg.command("location", match => {
-        const params = {
+      msg.command("location", async match => {
+        const {body} = await msg.http.get({
           uri: "http://nominatim.openstreetmap.org/search",
           qs: {
             format: "json",
             addressdetails: 1,
             q: match[0]
           }
-        }
-        msg.http.get(params).then( res => {
-          msg.map(JSON.parse(res.body).slice(0, 3), place => {
-            msg.sendLocation(place)
-            msg.send(place.display_name)
-            weather(msg, toLatLon(place), text => msg.send(text))
-          })
+        })
+        JSON.parse(body).slice(0, 3).map(place => {
+          msg.sendLocation(place)
+          msg.send(place.display_name)
+          weather(msg, toLatLon(place), text => msg.send(text))
         })
       })
     }
