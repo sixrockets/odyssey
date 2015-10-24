@@ -1,45 +1,10 @@
 import rp from "request-promise"
 import { max } from "lodash"
+import TelegramClient from "telegramClient"
 
 export default (app, onEvent) => {
-  class TelegramAdapter {
-    constructor() {
-      this.offset = 0
-    }
 
-    url(action, file) {
-      return file
-        ? `https://api.telegram.org/file/bot${app.config.telegram_api.token}/${file}`
-        : `https://api.telegram.org/bot${app.config.telegram_api.token}/${action}`
-    }
-
-    command(action) {
-      return qs => rp(action === "file"
-        ? this.url(action, qs)
-        : { url: this.url(action), qs: qs })
-    }
-
-    send({id}, text_) {
-      const sender = text => this.command("sendMessage")({ chat_id: id, text })
-      return text_ ? sender(text_) : sender
-    }
-
-    sendLocation({id}, location) {
-      const sender = ({lat, lon}) => this._sendLocation({ chat_id: id, latitude: lat, longitude: lon })
-      return location ? sender(location) : sender
-    }
-
-    get _sendLocation() {
-      return this.command("sendLocation")
-    }
-
-    get _getUpdates() {
-      return this.command("getUpdates")
-    }
-
-  }
-
-  const client = new TelegramAdapter()
+  const client = new TelegramClient()
 
   const fillMessage = message => {
     return {

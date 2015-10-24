@@ -1,15 +1,14 @@
 const _ = require("lodash")
 const Q = require("Q")
 const Qx = require("Qx")
-const SlackMessage = require("./slackMessage")
+const Message = require("./message")
 
-class AdapterBase {
+export default class AdapterBase {
 
-  constructor( ) {
-    console.log("init adapter")
-    console.log(arguments[0])
-    this.middlewares = Array.prototype.slice.call(arguments)
-    this.bots = []
+  constructor( options ) {
+    this.middlewares = options.middlewares
+    this.bots = options.bots
+    this.driver = options.driver
   }
 
   use( middleware ) {
@@ -20,17 +19,38 @@ class AdapterBase {
     this.bots.push(bot)
   }
 
-  onMessage( message ) {
-    const middlewareFunctions = _.map( this.middlewares, (middleware) => { return middleware.call.bind(middleware)} )
-    const originalMessage = new SlackMessage(message)
-    const pipelinedMessagePromise = middlewareFunctions.reduce(Q.when, Q(originalMessage) )
+  onEvent( originalMessage ) {
+    const self = this
+    const middlewareFunctions = _.map( this.middlewares, (middleware) => {
+      const partialFunc = _.partial( middleware['call'], self )
+      return partialFunc.bind(middleware)
+    })
+    const message = new Message(originalMessage)
+    const pipelinedMessagePromise = middlewareFunctions.reduce(Q.when, Q(message) )
 
     pipelinedMessagePromise
-      .then( (slackMessage) => {
+      .then( (event) => {
         console.log("bot pipeline here")
-        console.log(slackMessage)
-        Qx.map(this.bots, (bot) => bot.onMessage && bot.onMessage(slackMessage))
-      } )
+        console.log(originalMessage)
+        Qx.map(this.bots, (bot) => {
+          console.log(`${bot.name} onEvent`)
+          try {
+            bot.onEvent && bot.onEvent(message)
+          } catch (e) {
+            console.log(`${bot.name} onEvent ${error}` )
+            console.log(e)
+          }
+          if(event.parsedMessage.type === "message"){
+            console.log(`${bot.name} onMessage`)
+            try {
+              bot.onMessage && bot.onMessage(message)
+            } catch (e) {
+              console.log(`${bot.name} onMessage ${error}` )
+              console.log(e)
+            }                        
+          }
+        })
+      })
       .fail( (error) => {
         console.log(error)
         console.log("pipeline ignoring message")

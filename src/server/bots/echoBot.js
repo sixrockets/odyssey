@@ -6,6 +6,5 @@ export default (_app) =>
 
     onMessage(message) {
       message.command("echo", match => message.send(match[0]))
-      // message.send(message.text)
     }
   }
