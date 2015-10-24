@@ -45,11 +45,10 @@
   "scripts": {
     "clean": "rm -rf build/*",
     "watch-js": "babel src -d build --experimental -w",
-    "dev-server": "node build/server/webpack",
-    "start": "npm run watch-js & npm run dev-server & sleep 3 & npm run server",
-    "dev-start": "npm run watch-js & npm run dev-server & sleep 3 & npm run dev-server",
-    "build": "npm run clean && babel src -d build --experimental",
     "server": "nodemon ./build/server/index.js",
-    "dev-server": "nodemon debug ./build/server/index.js"
+    "build": "npm run clean & babel src -d build --experimental",
+    "dev-server": "nodemon debug ./build/server/index.js",
+    "start": "npm run watch-js & sleep 3 & npm run server",
+    "dev-start": "npm run watch-js & sleep 3 & npm run dev-server"
   }
 }
