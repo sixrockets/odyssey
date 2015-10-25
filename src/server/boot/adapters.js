@@ -1,11 +1,16 @@
-"use strict"
-
 module.exports = (app) => {
 
-  if (app.config.slack_api.token !== 'undefined') require("../adapters/slackAdapter")(app)
+  const adapters = []
 
-  if (app.config.telegram_api.token) app.telegramAdapter = require("../adapters/telegramAdapter")(app)
-  //
-  // app.webAdapter = require("../adapters/webAdapter")(app, onEvent)
+  if (app.config.slack_api.token) {
+    adapters.push(require("../adapters/slackAdapter")(app))
+  }
 
+  if (app.config.telegram_api.token) {
+    adapters.push(require("../adapters/telegramAdapter")(app))
+  }
+
+  adapters.push(require("../adapters/webAdapter")(app))
+
+  return adapters
 }

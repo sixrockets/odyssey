@@ -8,14 +8,14 @@ const telegramSendLocation = require('./middlewares/telegramSendLocation')
 const messageFiller = require('./middlewares/messageFiller')
 const AdapterBase = require("./adapterBase")
 
-module.exports = (app) => {
-
-  const driver = { name: 'telegram' }
-  driver.client = new TelegramClient(app.config.telegram_api.token)
+export default app => {
+  const driver = {
+    name: 'telegram',
+    client: new TelegramClient(app.config.telegram_api.token)
+  }
 
   const telegramAdapter = new AdapterBase({
     middlewares: [telegramParsedMessage, messageFiller, telegramResponder, telegramSendLocation ],
-    bots: app.bots,
     driver: driver
   })
 
@@ -23,4 +23,5 @@ module.exports = (app) => {
 
   driver.client.start()
 
+  return telegramAdapter
 }

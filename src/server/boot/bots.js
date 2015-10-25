@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  app.bots = app.config.bots.map(botName => {
+  return app.config.bots.map(botName => {
     console.log("loading " + botName)
     const BotClass = require( `../bots/${botName}` )(app)
     return new BotClass()

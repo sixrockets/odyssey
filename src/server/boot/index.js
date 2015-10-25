@@ -2,6 +2,7 @@ module.exports = (app) => {
   require("./modules")(app)
   require("./redisClient")(app)
   require("./mongoose")(app)
-  require("./bots")(app)
-  require("./adapters")(app)
+  app.bots = require("./bots")(app)
+  app.adapters = require("./adapters")(app)
+  require("./listeners")(app)
 }

@@ -5,6 +5,6 @@ export default (_app) =>
     }
 
     async onMessage(message) {
-      message.command("echo", match => await message.send(match[0]))
+      message.command("echo", async match => await message.send(match[0]))
     }
   }

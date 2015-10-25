@@ -3,9 +3,9 @@ const rp = require("request-promise").defaults({ simple: false, followRedirect: 
 
 export default class Message {
 
-  constructor(originalMessage){
+  constructor(originalMessage, parsedMessage = {}){
     this.originalMessage = originalMessage
-    this.parsedMessage = {}
+    this.parsedMessage = parsedMessage
     this.extend = extend
     this.sample = sample
     this.map = map
