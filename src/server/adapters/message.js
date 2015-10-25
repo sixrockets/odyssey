@@ -1,15 +1,14 @@
-import { extend, sample, map } from "lodash"
+import { sample } from "lodash"
 const rp = require("request-promise").defaults({ simple: false, followRedirect: false, resolveWithFullResponse: true})
 
 export default class Message {
 
-  constructor(originalMessage, parsedMessage = {}){
-    this.originalMessage = originalMessage
-    this.parsedMessage = parsedMessage
-    this.extend = extend
+  constructor(message, extend) {
+    this.originalMessage = message
+    this.parsedMessage = message
     this.sample = sample
-    this.map = map
     this.http = rp
+    Object.assign(this, extend)
   }
 
   hear(regexp, cb){

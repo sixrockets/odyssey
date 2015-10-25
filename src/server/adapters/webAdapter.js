@@ -6,12 +6,12 @@ import Message from "./message"
 import EventEmitter from "events"
 
 export default app => {
-  const emitter = new EventEmitter()
+  const driver = new EventEmitter()
+  const device = "web"
+  const type = "message"
 
   const emit = (text, send) => {
-    const message = new Message(null, {type: 'message', text})
-    Object.assign(message, {device: "web", driver: {}, send})
-    emitter.emit('event', message)
+    driver.emit("event", new Message({type, text}, {device, driver, send}))
   }
 
   http.createServer((req, res) => {
@@ -19,12 +19,12 @@ export default app => {
   }).listen(8000)
 
   ws.createServer(conn => {
-    conn.on("text", text => emit(text, ::conn.sendText))
+    conn.on("text", text => emit(text, conn.sendText.bind(conn)))
 
     // conn.on("close", (code, reason) => {
     //     console.log("Connection closed")
     // })
   }).listen(8001)
 
-  return emitter
+  return driver
 }

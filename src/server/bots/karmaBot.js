@@ -43,7 +43,7 @@ module.exports = (app) => {
       const query = this.slackUsers.model().find().sort( [["karma", "descending"]] ).limit(5)
       query.exec((err, users) => {
         let index = 1
-        const messages = map(users, user => {
+        const messages = users.map(user => {
           let str = ""
           let karma = 0
           karma = (user.karma === undefined) ? 0 : user.karma
