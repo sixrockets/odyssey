@@ -1,7 +1,6 @@
 import { bind } from "lodash"
 import TelegramClient from "./telegramClient"
 
-const jsonParser = require('./middlewares/jsonParser')
 const telegramResponder = require('./middlewares/telegramResponder')
 const telegramParsedMessage = require('./middlewares/telegramParsedMessage')
 const telegramSendLocation = require('./middlewares/telegramSendLocation')

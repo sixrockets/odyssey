@@ -1,8 +1,3 @@
-class JsonParser {
-  call(adapter, message) {
-    message.parsedMessage = JSON.parse( message.originalMessage )
-    return message
-  }
+export default function jsonParser(_adapter, message) {
+  return Object.assign(message, {parsedMessage: JSON.parse(message.originalMessage)})
 }
-
-module.exports = new JsonParser()

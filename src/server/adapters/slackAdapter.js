@@ -3,7 +3,6 @@ import { bind } from 'lodash'
 const jsonParser = require('./middlewares/jsonParser')
 const messageFiller = require('./middlewares/messageFiller')
 const slackResponder = require('./middlewares/slackResponder')
-const defaultSendLocation = require('./middlewares/defaultSendLocation')
 const AdapterBase = require("./adapterBase")
 
 module.exports = (app) => {
@@ -11,7 +10,7 @@ module.exports = (app) => {
   driver.users = app.slackUsers = require("./slackUsers")(app)
   driver.client = app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token)
   const slackAdapter = new AdapterBase({
-    middlewares: [ jsonParser, messageFiller, slackResponder, defaultSendLocation ],
+    middlewares: [ jsonParser, messageFiller, slackResponder ],
     driver: driver
   })
 

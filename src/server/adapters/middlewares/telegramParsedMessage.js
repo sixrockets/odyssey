@@ -1,8 +1,4 @@
-class TelegramParsedMessage {
-  call(adapter, message) {
-    message.parsedMessage.type = "message"
-    return message
-  }
+export default function telegramParsedMessage(_adapter, message) {
+  message.parsedMessage.type = "message"
+  return message
 }
-
-module.exports = new TelegramParsedMessage()

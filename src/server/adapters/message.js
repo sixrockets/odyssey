@@ -11,20 +11,18 @@ export default class Message {
     Object.assign(this, extend)
   }
 
-  hear(regexp, cb){
+  hear(regexp, cb) {
     const result = regexp.exec(this.parsedMessage.text)
     if (result) cb(result)
   }
 
   command(commandText, regExp, cb) {
-    console.log('on message command')
     const hasRegExp = (cb === void 0)
     const callback = hasRegExp ? regExp : cb
     const regexp = hasRegExp ? /.*/ : regExp
     const commandRegexp = new RegExp(`^[/@#]?${commandText}\\s*(.*)$`, "i")
     let result = commandRegexp.exec(this.parsedMessage.text)
     result = result && regexp.exec(result[1])
-    console.log(result)
     if (result) callback(result)
   }
 

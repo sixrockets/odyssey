@@ -1,7 +1,6 @@
-const http = require("http")
-const ws = require("nodejs-websocket")
-const fs = require("fs")
-
+import http from "http"
+import ws from "nodejs-websocket"
+import fs from "fs"
 import Message from "./message"
 import EventEmitter from "events"
 
@@ -10,9 +9,8 @@ export default app => {
   const device = "web"
   const type = "message"
 
-  const emit = (text, send) => {
+  const emit = (text, send) =>
     driver.emit("event", new Message({type, text}, {device, driver, send}))
-  }
 
   http.createServer((req, res) => {
     fs.createReadStream("index.html").pipe(res)

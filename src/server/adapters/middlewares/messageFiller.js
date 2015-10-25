@@ -1,9 +1,3 @@
-class MessageFiller {
-  call(adapter, message) {
-    message.device = adapter.driver.name
-    message.driver = adapter.driver
-    return message
-  }
+export default function messageFiller({driver}, msg) {
+  return Object.assign(msg, { driver, device: driver.name })
 }
-
-module.exports = new MessageFiller()

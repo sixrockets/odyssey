@@ -1,4 +1,4 @@
-import _ from "lodash"
+import {partial} from "lodash"
 import Q from "Q"
 import Message from "./message"
 import EventEmitter from "events"
@@ -14,19 +14,18 @@ export default class AdapterBase extends EventEmitter {
     this.middlewares.push(middleware)
   }
 
-  async onEvent( originalMessage ) {
-    try{
-      const middlewareFunctions = this.middlewares.map( middleware =>
-         _.partial(middleware.call, this).bind(middleware)
-      )
-      const message = new Message(originalMessage)
-      const pipelinedMessagePromise = middlewareFunctions.reduce(Q.when, Q(message))
+  messagePromise(event){
+    const middlewares = this.middlewares.map( middleware =>
+      partial(middleware, this).bind(middleware)
+    )
+    return middlewares.reduce(Q.when, Q(new Message(event)))
+  }
 
-      const event = await pipelinedMessagePromise
-      this.emit("event", event)
+  async onEvent( event ) {
+    try {
+      this.emit("event", await this.messagePromise(event))
     } catch (error) {
       console.trace(error)
     }
-
   }
 }

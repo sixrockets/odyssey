@@ -1,4 +1,4 @@
-import { map, contains } from "lodash"
+import { contains } from "lodash"
 import { ninvoke } from "Q"
 const MessageParser = require("./karmaBot/parser")
 

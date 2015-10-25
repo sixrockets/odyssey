@@ -1,5 +1,5 @@
 import rp from "request-promise"
-import { max, bind } from "lodash"
+import { max } from "lodash"
 
 const EventEmitter = require('events')
 
@@ -21,13 +21,10 @@ export default class TelegramAdapter extends EventEmitter {
   }
 
   command(action) {
-    let requestFunc = (qs) => {
-      if (action === "file")
-        return rp( this.url(action, qs) )
-      else
-        return rp( { url: this.url(action), qs: qs } )
+    return qs => {
+      if (action === "file") return rp( this.url(action, qs) )
+      return rp( { url: this.url(action), qs: qs } )
     }
-    return requestFunc
   }
 
   async send(id, text) {
