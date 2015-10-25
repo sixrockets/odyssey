@@ -3,11 +3,11 @@ import sendLocationPolyfill from "../middlewares/sendLocationPolyfill"
 
 const isMessage = ({parsedMessage}) => parsedMessage.type === "message"
 
-const listener = app => async event => {
+const listener = app => async rawEvent => {
   try {
-    event = await app.middlewares.reduce(Q.when, Q(event))
+    const event = await app.middlewares.reduce(Q.when, Q(rawEvent))
 
-    app.bots.map(bot => {
+    app.bots.forEach(bot => {
       if (bot.onEvent) bot.onEvent(event)
       if (isMessage(event) && bot.onMessage) bot.onMessage(event)
     })
@@ -18,5 +18,5 @@ const listener = app => async event => {
 
 export default app => {
   app.middlewares = [sendLocationPolyfill]
-  app.adapters.map(adapter => adapter.on("event", listener(app)))
+  app.adapters.forEach(adapter => adapter.on("event", listener(app)))
 }

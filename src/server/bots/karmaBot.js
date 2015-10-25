@@ -7,7 +7,7 @@ module.exports = (app) => {
   class KarmaBot {
 
     constructor() {
-      this.name = 'karmaBot'
+      this.name = "karmaBot"
       this.slackUsers = app.slackUsers
       this.slackClient = app.slackClient
       this.redisClient = app.redisClient
@@ -66,13 +66,13 @@ module.exports = (app) => {
 
     _tryAction(message, cb) {
 
-      const parsedInfo = this.messageParser['call'](message).parsedMessage
+      const parsedInfo = this.messageParser["call"](message).parsedMessage
       const action = parsedInfo.action
       if (action !== undefined ) {
-        console.log('action OK')
+        console.log("action OK")
         this.canPerformAction(parsedInfo)
           .done( notCanPerform => {
-            if ( notCanPerform == "0") {
+            if ( notCanPerform === "0") {
               switch (action) {
                 case "karmaPlus":
                   this.increaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb )

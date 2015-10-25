@@ -1,6 +1,6 @@
 export default async function telegramResponder(adapter, message) {
   let sendMessage
-  if (message.parsedMessage.type === 'message') {
+  if (message.parsedMessage.type === "message") {
     sendMessage = (chatId) => {
       const wrappedFunc = async (text) => {
         await adapter.driver.client.send(chatId, text)

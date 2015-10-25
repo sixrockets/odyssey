@@ -14,14 +14,14 @@ export default class AdapterBase extends EventEmitter {
     this.middlewares.push(middleware)
   }
 
-  messagePromise(event){
-    const middlewares = this.middlewares.map( middleware =>
+  messagePromise(event) {
+    const middlewares = this.middlewares.map(middleware =>
       partial(middleware, this).bind(middleware)
     )
     return middlewares.reduce(Q.when, Q(new Message(event)))
   }
 
-  async onEvent( event ) {
+  async onEvent(event) {
     try {
       this.emit("event", await this.messagePromise(event))
     } catch (error) {

@@ -1,15 +1,15 @@
 import { bind } from "lodash"
 import TelegramClient from "./telegramClient"
 
-const telegramResponder = require('./middlewares/telegramResponder')
-const telegramParsedMessage = require('./middlewares/telegramParsedMessage')
-const telegramSendLocation = require('./middlewares/telegramSendLocation')
-const messageFiller = require('./middlewares/messageFiller')
+const telegramResponder = require("./middlewares/telegramResponder")
+const telegramParsedMessage = require("./middlewares/telegramParsedMessage")
+const telegramSendLocation = require("./middlewares/telegramSendLocation")
+const messageFiller = require("./middlewares/messageFiller")
 const AdapterBase = require("./adapterBase")
 
 export default app => {
   const driver = {
-    name: 'telegram',
+    name: "telegram",
     client: new TelegramClient(app.config.telegram_api.token)
   }
 
