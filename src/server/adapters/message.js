@@ -4,14 +4,12 @@ const rp = require("request-promise").defaults({ simple: false, followRedirect: 
 export default class Message {
 
   constructor(originalMessage){
-    console.log("building message")
     this.originalMessage = originalMessage
     this.parsedMessage = {}
     this.extend = extend
     this.sample = sample
     this.map = map
     this.http = rp
-    console.log("built message")
   }
 
   hear(regexp, cb){
@@ -20,12 +18,14 @@ export default class Message {
   }
 
   command(commandText, regExp, cb) {
+    console.log('on message command')
     const hasRegExp = (cb === void 0)
     const callback = hasRegExp ? regExp : cb
     const regexp = hasRegExp ? /.*/ : regExp
     const commandRegexp = new RegExp(`^[/@#]?${commandText}\\s*(.*)$`, "i")
     let result = commandRegexp.exec(this.parsedMessage.text)
     result = result && regexp.exec(result[1])
+    console.log(result)
     if (result) callback(result)
   }
 

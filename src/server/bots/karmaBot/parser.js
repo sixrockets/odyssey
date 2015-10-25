@@ -3,7 +3,6 @@ import { merge } from "lodash"
 class KarmaBotParser {
 
   call(message) {
-    console.log("parsing")
     let action = undefined
     let userName = ""
     const parsedMessage = message.parsedMessage
@@ -22,17 +21,7 @@ class KarmaBotParser {
       userName = actionText.replace("++", "").replace("--", "")
     }
 
-    console.log("action: " + action)
-
-    try {
-      console.log( merge(parsedMessage, {action: action, mentionedUserName: userName}) )
-      message.parsedMessage = merge(parsedMessage, {action: action, mentionedUserName: userName})
-    } catch (e) {
-      console.log(e)
-    } finally {
-
-    }
-    console.log('parsed')
+    message.parsedMessage = merge(parsedMessage, {action: action, mentionedUserName: userName})
     return message
   }
 }

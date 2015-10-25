@@ -40,6 +40,7 @@ export default class AdapterBase {
             console.log(`${bot.name} onEvent ${error}` )
             console.log(e)
           }
+
           if(event.parsedMessage.type === "message"){
             console.log(`${bot.name} onMessage`)
             try {
@@ -47,7 +48,7 @@ export default class AdapterBase {
             } catch (e) {
               console.log(`${bot.name} onMessage ${error}` )
               console.log(e)
-            }                        
+            }
           }
         })
       })
