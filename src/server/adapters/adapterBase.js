@@ -1,40 +1,31 @@
-const _ = require("lodash")
-const Q = require("Q")
-const Qx = require("Qx")
-const SlackMessage = require("./slackMessage")
+import {partial} from "lodash"
+import Q from "Q"
+import Message from "./message"
+import EventEmitter from "events"
 
-class AdapterBase {
-
-  constructor( ) {
-    console.log("init adapter")
-    console.log(arguments[0])
-    this.middlewares = Array.prototype.slice.call(arguments)
-    this.bots = []
+export default class AdapterBase extends EventEmitter {
+  constructor( options ) {
+    super()
+    this.middlewares = options.middlewares
+    this.driver = options.driver
   }
 
   use( middleware ) {
     this.middlewares.push(middleware)
   }
 
-  useBot( bot ) {
-    this.bots.push(bot)
+  messagePromise(event) {
+    const middlewares = this.middlewares.map(middleware =>
+      partial(middleware, this).bind(middleware)
+    )
+    return middlewares.reduce(Q.when, Q(new Message(event)))
   }
 
-  onMessage( message ) {
-    const middlewareFunctions = _.map( this.middlewares, (middleware) => { return middleware.call.bind(middleware)} )
-    const originalMessage = new SlackMessage(message)
-    const pipelinedMessagePromise = middlewareFunctions.reduce(Q.when, Q(originalMessage) )
-
-    pipelinedMessagePromise
-      .then( (slackMessage) => {
-        console.log("bot pipeline here")
-        console.log(slackMessage)
-        Qx.map(this.bots, (bot) => bot.onMessage && bot.onMessage(slackMessage))
-      } )
-      .fail( (error) => {
-        console.log(error)
-        console.log("pipeline ignoring message")
-      } )
+  async onEvent(event) {
+    try {
+      this.emit("event", await this.messagePromise(event))
+    } catch (error) {
+      console.trace(error)
+    }
   }
-
 }

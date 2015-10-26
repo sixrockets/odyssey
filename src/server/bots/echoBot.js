@@ -4,8 +4,7 @@ export default (_app) =>
       this.name = "EchoBot"
     }
 
-    onMessage(message) {
-      message.command("echo", match => message.send(match[0]))
-      // message.send(message.text)
+    async onMessage(message) {
+      message.command("echo", async match => await message.send(match[0]))
     }
   }

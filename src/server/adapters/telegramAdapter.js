@@ -1,75 +1,26 @@
-import rp from "request-promise"
-import { max } from "lodash"
+import { bind } from "lodash"
+import TelegramClient from "./telegramClient"
 
-export default (app, onEvent) => {
-  class TelegramAdapter {
-    constructor() {
-      this.offset = 0
-    }
+const telegramResponder = require("./middlewares/telegramResponder")
+const telegramParsedMessage = require("./middlewares/telegramParsedMessage")
+const telegramSendLocation = require("./middlewares/telegramSendLocation")
+const messageFiller = require("./middlewares/messageFiller")
+const AdapterBase = require("./adapterBase")
 
-    url(action, file) {
-      return file
-        ? `https://api.telegram.org/file/bot${app.config.telegram_api.token}/${file}`
-        : `https://api.telegram.org/bot${app.config.telegram_api.token}/${action}`
-    }
-
-    command(action) {
-      return qs => rp(action === "file"
-        ? this.url(action, qs)
-        : { url: this.url(action), qs: qs })
-    }
-
-    send({id}, text_) {
-      const sender = text => this.command("sendMessage")({ chat_id: id, text })
-      return text_ ? sender(text_) : sender
-    }
-
-    sendLocation({id}, location) {
-      const sender = ({lat, lon}) => this._sendLocation({ chat_id: id, latitude: lat, longitude: lon })
-      return location ? sender(location) : sender
-    }
-
-    get _sendLocation() {
-      return this.command("sendLocation")
-    }
-
-    get _getUpdates() {
-      return this.command("getUpdates")
-    }
-
+export default app => {
+  const driver = {
+    name: "telegram",
+    client: new TelegramClient(app.config.telegram_api.token)
   }
 
-  const client = new TelegramAdapter()
+  const telegramAdapter = new AdapterBase({
+    middlewares: [telegramParsedMessage, messageFiller, telegramResponder, telegramSendLocation ],
+    driver: driver
+  })
 
-  const fillMessage = message => {
-    return {
-      device: "telegram",
-      driver: client,
-      type: "message",
-      sendLocation: client.sendLocation(message.chat),
-      ...message
-    }
-  }
+  driver.client.on("messageReceived", bind(telegramAdapter.onEvent, telegramAdapter) )
 
-  const updateOffset = result => {
-    if (result[0]) client.offset = max(result.map(update => update.update_id))
-  }
+  driver.client.start()
 
-  const tick = async () => {
-    try {
-      const response = await (client._getUpdates({offset: client.offset + 1}))
-      const {result} = JSON.parse(response)
-      updateOffset(result)
-
-      result.map(({message}) =>
-        onEvent(fillMessage(message), client.send(message.chat))
-      )
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  setInterval(tick, 1000)
-
-  return client
+  return telegramAdapter
 }

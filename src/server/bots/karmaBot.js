@@ -1,6 +1,5 @@
-import { map, contains } from "lodash"
+import { contains } from "lodash"
 import { ninvoke } from "Q"
-const SlackMessage = require("../botPipeline/slackMessage")
 const MessageParser = require("./karmaBot/parser")
 
 module.exports = (app) => {
@@ -8,7 +7,7 @@ module.exports = (app) => {
   class KarmaBot {
 
     constructor() {
-      this.name = this.botName
+      this.name = "karmaBot"
       this.slackUsers = app.slackUsers
       this.slackClient = app.slackClient
       this.redisClient = app.redisClient
@@ -38,12 +37,13 @@ module.exports = (app) => {
       })
     }
 
-    showKarma( responder, _cb ) {
+    showKarma( message, _cb ) {
+      console.log("show karma called")
       this.redisClient.set("karmaBot:karmaList", "1", "NX", "EX", 10)
       const query = this.slackUsers.model().find().sort( [["karma", "descending"]] ).limit(5)
       query.exec((err, users) => {
         let index = 1
-        const messages = map(users, user => {
+        const messages = users.map(user => {
           let str = ""
           let karma = 0
           karma = (user.karma === undefined) ? 0 : user.karma
@@ -52,7 +52,7 @@ module.exports = (app) => {
           return str
         })
 
-        responder(messages.join("\n"))
+        message.send(messages.join("\n"))
       })
     }
 
@@ -65,29 +65,30 @@ module.exports = (app) => {
 
 
     _tryAction(message, cb) {
-      const slackMessage = new SlackMessage(message, message)
-      const parsedInfo = this.messageParser.call(slackMessage).parsedMessage
+
+      const parsedInfo = this.messageParser["call"](message).parsedMessage
       const action = parsedInfo.action
-
       if (action !== undefined ) {
-        this.canPerformAction(parsedInfo).done( notCanPerform => {
-
-          if ( notCanPerform === "0") {
-            switch (action) {
-              case "karmaPlus":
-                this.increaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb )
-                break
-              case "karmaMinus":
-                this.decreaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb )
-                break
-              case "karmaList":
-                this.showKarma( message.send, cb )
-                break
-              default:
-                break
+        console.log("action OK")
+        this.canPerformAction(parsedInfo)
+          .done( notCanPerform => {
+            if ( notCanPerform === "0") {
+              switch (action) {
+                case "karmaPlus":
+                  this.increaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb )
+                  break
+                case "karmaMinus":
+                  this.decreaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb )
+                  break
+                case "karmaList":
+                  this.showKarma( message, cb )
+                  break
+                default:
+                  break
+              }
             }
-          }
-        }, () => { console.log("error getting from redis") } )
+          })
+          .fail( (error) => { console.log(error) } )
       }
     }
 

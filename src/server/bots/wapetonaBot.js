@@ -60,6 +60,7 @@ export default (_app) =>
       })
 
       msg.command("location", async match => {
+        console.log("location command")
         const {body} = await msg.http.get({
           uri: "http://nominatim.openstreetmap.org/search",
           qs: {
@@ -68,10 +69,11 @@ export default (_app) =>
             q: match[0]
           }
         })
-        JSON.parse(body).slice(0, 3).map(place => {
-          msg.sendLocation(place)
-          msg.send(place.display_name)
-          weather(msg, toLatLon(place), text => msg.send(text))
+        JSON.parse(body).slice(0, 3).forEach( async place => {
+          console.log("sending location")
+          await msg.sendLocation(place)
+          await msg.send(place.display_name)
+          weather(msg, toLatLon(place), async text => await msg.send(text))
         })
       })
     }
