@@ -69,7 +69,7 @@ export default (_app) =>
             q: match[0]
           }
         })
-        JSON.parse(body).slice(0, 3).map( async place => {
+        JSON.parse(body).slice(0, 3).forEach( async place => {
           console.log("sending location")
           await msg.sendLocation(place)
           await msg.send(place.display_name)

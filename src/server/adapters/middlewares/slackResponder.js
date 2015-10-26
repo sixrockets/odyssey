@@ -1,20 +1,16 @@
-class SlackResponder {
-  call(adapter, message) {
-    let sendMessage
-    if (message.parsedMessage.type === 'message'){
-      sendMessage = (channel) => {
-        const wrappedFunc = (text) => {
-          adapter.driver.client.sendMessage(text, channel)
-        }
-        return wrappedFunc
+export default function slackResponder(adapter, message) {
+  let sendMessage
+  if (message.parsedMessage.type === "message") {
+    sendMessage = (channel) => {
+      const wrappedFunc = (text) => {
+        adapter.driver.client.sendMessage(text, channel)
       }
-    } else {
-      sendMessage = () => {}
+      return wrappedFunc
     }
-
-    message.send = sendMessage(message.parsedMessage.channel)
-    return message
+  } else {
+    sendMessage = () => {}
   }
-}
 
-module.exports = new SlackResponder()
+  message.send = sendMessage(message.parsedMessage.channel)
+  return message
+}

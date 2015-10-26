@@ -1,17 +1,8 @@
-import {partial} from "lodash"
+export default async function telegramSendLocation({driver}, msg) {
+  const chatId = msg.parsedMessage.chat.id
 
-class TelegramSendLocation {
-  async call(adapter, message) {
+  msg.sendLocation = loc => driver.client.sendLocation(chatId, loc)
 
-    const sendLocation = (chatId) => {
-      const wrappedFunc = async (location) => {
-        await adapter.driver.client.sendLocation(chatId, location)
-      }
-    }
-
-    message.sendLocation = sendLocation(message.parsedMessage.chat.id)
-    return message
-  }
+  return msg
 }
 
-module.exports = new TelegramSendLocation()

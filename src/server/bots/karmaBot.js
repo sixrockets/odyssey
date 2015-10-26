@@ -1,4 +1,4 @@
-import { map, contains } from "lodash"
+import { contains } from "lodash"
 import { ninvoke } from "Q"
 const MessageParser = require("./karmaBot/parser")
 
@@ -7,7 +7,7 @@ module.exports = (app) => {
   class KarmaBot {
 
     constructor() {
-      this.name = 'karmaBot'
+      this.name = "karmaBot"
       this.slackUsers = app.slackUsers
       this.slackClient = app.slackClient
       this.redisClient = app.redisClient
@@ -43,7 +43,7 @@ module.exports = (app) => {
       const query = this.slackUsers.model().find().sort( [["karma", "descending"]] ).limit(5)
       query.exec((err, users) => {
         let index = 1
-        const messages = map(users, user => {
+        const messages = users.map(user => {
           let str = ""
           let karma = 0
           karma = (user.karma === undefined) ? 0 : user.karma
@@ -66,13 +66,13 @@ module.exports = (app) => {
 
     _tryAction(message, cb) {
 
-      const parsedInfo = this.messageParser['call'](message).parsedMessage
+      const parsedInfo = this.messageParser["call"](message).parsedMessage
       const action = parsedInfo.action
       if (action !== undefined ) {
-        console.log('action OK')
+        console.log("action OK")
         this.canPerformAction(parsedInfo)
           .done( notCanPerform => {
-            if ( notCanPerform == "0") {
+            if ( notCanPerform === "0") {
               switch (action) {
                 case "karmaPlus":
                   this.increaseKarma( parsedInfo.mentionedUserName, parsedInfo.userId, cb )

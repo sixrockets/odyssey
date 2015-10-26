@@ -1,20 +1,16 @@
-import { bind } from 'lodash'
+import { bind } from "lodash"
 
-const jsonParser = require('./middlewares/jsonParser')
-const messageFiller = require('./middlewares/messageFiller')
-const slackResponder = require('./middlewares/slackResponder')
-const defaultSendLocation = require('./middlewares/defaultSendLocation')
+const jsonParser = require("./middlewares/jsonParser")
+const messageFiller = require("./middlewares/messageFiller")
+const slackResponder = require("./middlewares/slackResponder")
 const AdapterBase = require("./adapterBase")
 
 module.exports = (app) => {
-
-  const driver = { name: 'slack' }
+  const driver = { name: "slack" }
   driver.users = app.slackUsers = require("./slackUsers")(app)
   driver.client = app.slackClient = new app.modules.AwesomeSlack(app.config.slack_api.token)
-
   const slackAdapter = new AdapterBase({
-    middlewares: [ jsonParser, messageFiller, slackResponder, defaultSendLocation ],
-    bots: app.bots,
+    middlewares: [ jsonParser, messageFiller, slackResponder ],
     driver: driver
   })
 
@@ -24,4 +20,6 @@ module.exports = (app) => {
   app.slackClient.on("messageReceived", bind(slackAdapter.onEvent, slackAdapter) )
 
   app.slackClient.startSocketConnection()
+
+  return slackAdapter
 }

@@ -1,7 +1,7 @@
 import rp from "request-promise"
-import { max, bind } from "lodash"
+import { max } from "lodash"
 
-const EventEmitter = require('events')
+const EventEmitter = require("events")
 
 export default class TelegramAdapter extends EventEmitter {
   constructor(apiToken) {
@@ -10,7 +10,7 @@ export default class TelegramAdapter extends EventEmitter {
     this.offset = 0
   }
 
-  start(){
+  start() {
     setInterval(this.tick.bind(this), 1000)
   }
 
@@ -21,13 +21,10 @@ export default class TelegramAdapter extends EventEmitter {
   }
 
   command(action) {
-    let requestFunc = (qs) => {
-      if (action === "file")
-        return rp( this.url(action, qs) )
-      else
-        return rp( { url: this.url(action), qs: qs } )
+    return qs => {
+      if (action === "file") return rp( this.url(action, qs) )
+      return rp( { url: this.url(action), qs: qs } )
     }
-    return requestFunc
   }
 
   async send(id, text) {
@@ -40,20 +37,18 @@ export default class TelegramAdapter extends EventEmitter {
     return (location ? await sender(location) : await sender)
   }
 
-  updateOffset(result){
+  updateOffset(result) {
     if (result[0]) this.offset = max(result.map(update => update.update_id))
   }
 
-  async tick(){
+  async tick() {
     try {
       const response = await this._getUpdates({offset: this.offset + 1})
       const {result} = JSON.parse(response)
       this.updateOffset(result)
-      result.map(({message}) =>{
-        this.emit('messageReceived', message)
-      })
+      result.forEach(({message}) => this.emit("messageReceived", message))
     } catch (error) {
-      console.log('error on tick')
+      console.log("error on tick")
       console.error(error)
     }
   }
