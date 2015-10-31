@@ -51,7 +51,7 @@
     "server": "nodemon ./build/server/index.js",
     "build": "npm run clean & babel src -d build --experimental",
     "dev-server": "nodemon debug ./build/server/index.js",
-    "start": "eslint src && npm run watch-js & sleep 3 & npm run server",
+    "start": "eslint src && (npm run watch-js & sleep 3 & npm run server)",
     "dev-start": "npm run watch-js & sleep 3 & npm run dev-server"
   }
 }
